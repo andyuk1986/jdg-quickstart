@@ -1,10 +1,12 @@
-package com.jboss.datagrid.monispan.servlet;
+package org.jboss.as.quickstarts.datagrid.monispan.jsf;
 
-import com.jboss.datagrid.monispan.Reporter;
-import com.jboss.datagrid.monispan.cache.CacheProvider;
+import org.jboss.as.quickstarts.datagrid.monispan.Reporter;
+import org.jboss.as.quickstarts.datagrid.monispan.cache.CacheProvider;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import javax.faces.application.Application;
+import javax.faces.event.AbortProcessingException;
+import javax.faces.event.SystemEvent;
+import javax.faces.event.SystemEventListener;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Properties;
@@ -16,7 +18,7 @@ import java.util.Timer;
  * @author anna.manukyan
  * @since 4.0
  */
-public class StartupListener implements ServletContextListener {
+public class StartupListener implements SystemEventListener {
 
    public static final String NODE_NUMBER = "simulatorNodeNum";
 
@@ -29,10 +31,10 @@ public class StartupListener implements ServletContextListener {
    public static final String PROPERTY_FILE_NAME = "edg.properties";
 
    //@TODO change
-   public static String realApplicationPath;
    public static long frequency;
 
-   public void contextInitialized(ServletContextEvent event) {
+   @Override
+   public void processEvent(SystemEvent systemEvent) throws AbortProcessingException {
       System.out.println("Context is initialized.");
 
       Properties prop = new Properties();
@@ -57,16 +59,15 @@ public class StartupListener implements ServletContextListener {
          System.out.println(cal.getTime());
          cal.add(Calendar.SECOND, i);
 
-         t.schedule(r, cal.getTime(), frequency);
+         //t.schedule(r, cal.getTime(), frequency);
          CacheProvider.getInstance().startCache(nodeName);
 
          System.out.println("Thread is initialized.");
       }
-
-      realApplicationPath = event.getServletContext().getRealPath("/");
    }
 
-   public void contextDestroyed(ServletContextEvent event) {
-      System.out.println("Context is destroyed.");
+   @Override
+   public boolean isListenerForSource(Object source) {
+      return source instanceof Application;
    }
 }

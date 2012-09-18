@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+<h:head>
+   <title>JDG Monispan</title>
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+   <link rel="stylesheet" type="text/css" href="css/style.css"  />
+</h:head>
+<h:body><div id="main">&nbsp;
+   <div id="wrapper">
+
+      <ul class="menu">
+         <li><a href="#home" class="active">Home</a></li>
+         <li><a href="#">Full Data</a></li>
+         <div class="cb"></div>
+      </ul>
+
+      <div class="cb"></div>
+      <div class="container-bottom">
+         <div class="container-top">
+            <div class="container-middle">
+
+               <div id="home" class="visible section">
+                  <!--div class="profileimage">
+
+                        </div-->
+                  <div class="profileinfo">
+
+                     <center><h1>Monispan</h1>
+                        <span class="profession">Monitoring Simulation tool for visualising JDG data eviction to CacheStore.</span>
+
+                        <div class="line">&nbsp;</div>
+
+                        <h2>Statistics</h2> <p>(for the last 5 minutes)</p>
+                     </center>
+                     <p>
+                        <ui:insert name="content" />
+                     </p>
+
+                     <br />
+                  </div>
+                  <div class="cb"></div>
+               </div>
+
+               <div class="cb"></div>
+            </div>
+         </div>
+      </div>
+      <div class="shadow"></div>
+      <div class="copyright">
+         Copyright 2012 John Doe Personal Vcard - <a href="http://www.themesline.com/" title="Free website templates">Free website templates</a> by ThemesLine.<br /><a href="http://www.cemuzica.ro/" title="Muzica Noua" style="color:#ededed;">Muzica Noua</a>
+      </div>
+
+   </div>
+</div>
+</h:body>
+</html>

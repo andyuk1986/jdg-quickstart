@@ -1,8 +1,7 @@
-package com.jboss.datagrid.monispan;
+package org.jboss.as.quickstarts.datagrid.monispan;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Random;

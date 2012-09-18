@@ -1,50 +1,131 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0"?>
+<!-- JBoss, Home of Professional Open Source Copyright 2012, Red Hat, Inc.
+and/or its affiliates, and individual contributors by the @authors tag. See
+the copyright.txt in the distribution for a full listing of individual contributors.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required
+by applicable law or agreed to in writing, software distributed under the
+License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
+OF ANY KIND, either express or implied. See the License for the specific
+language governing permissions and limitations under the License. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>jdg-quickstart</groupId>
-    <artifactId>jdg-quickstart</artifactId>
+    <groupId>org.jboss.as.quickstarts</groupId>
+    <artifactId>jboss-as-monispan</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
-    <version>1.0</version>
+    <name>JBoss AS Quickstarts: Monispan</name>
+    <description>JBoss AS Quickstarts: Monispan</description>
 
-    <repositories>
-        <repository>
-            <id>org.jboss.resteasy</id>
-            <url>http://repository.jboss.org/maven2/</url>
-        </repository>
-    </repositories>
+    <url>http://jboss.org/jbossas</url>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <distribution>repo</distribution>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+        </license>
+    </licenses>
 
     <properties>
-        <jboss-as-management-port>9999</jboss-as-management-port>
+        <!-- Explicitly declaring the source encoding eliminates the following
+       message: -->
+        <!-- [WARNING] Using platform encoding (UTF-8 actually) to copy filtered
+  resources, i.e. build is platform dependent! -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Infinispan version for cache store jdbc library. -->
+        <version.org.infinispan>5.1.2.FINAL</version.org.infinispan>
+
+        <version.org.jboss.resteasy>2.2.2.GA </version.org.jboss.resteasy>
+
+        <!-- JBoss dependency versions -->
+        <jboss.as.plugin.version>7.1.1.Final</jboss.as.plugin.version>
+
+        <!-- Define the version of the JBoss BOMs we want to import. The
+   JBoss BOMs specify tested stacks. -->
+        <jboss.bom.version>1.0.1.CR4</jboss.bom.version>
+
+        <!-- other plugin versions -->
+        <compiler.plugin.version>2.3.2</compiler.plugin.version>
+        <buildhelper.plugin.version>1.7</buildhelper.plugin.version>
+        <war.plugin.version>2.2</war.plugin.version>
+
+        <!-- maven-compiler-plugin -->
+        <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.source>1.6</maven.compiler.source>
     </properties>
 
+    <dependencyManagement>
+        <!-- JBoss distributes a complete set of Java EE 6 APIs including
+        a Bill of Materials (BOM). A BOM specifies the versions of a "stack" (or
+        a collection) of artifacts. We use this here so that we always get the correct
+        versions of artifacts. Here we use the jboss-javaee-6.0-with-infinispan stack
+        and the jboss-javaee-6.0-with-transactions stack (you can read this as the
+        JBoss stack of the Java EE 6 APIs, with Infinispan and Transactions) -->
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.bom</groupId>
+                <artifactId>jboss-javaee-6.0-with-infinispan</artifactId>
+                <version>${jboss.bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
+
+        <!-- Import the Infinispan Core -->
         <dependency>
             <groupId>org.infinispan</groupId>
             <artifactId>infinispan-core</artifactId>
-            <version>5.1.6.FINAL</version>
         </dependency>
 
+        <!-- Import the Infinispan Cachestore jdbc dependency-->
         <dependency>
             <groupId>org.infinispan</groupId>
             <artifactId>infinispan-cachestore-jdbc</artifactId>
-            <version>5.1.6.FINAL</version>
+            <version>${version.org.infinispan}</version>
         </dependency>
 
+        <!-- Import the CDI API, we use provided scope as the API is included
+        in JBoss AS 7 -->
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
             <scope>provided</scope>
         </dependency>
 
+        <!-- Import the Common Annotations API (JSR-250), we use provided scope
+        as the API is included in JBoss AS 7 -->
         <dependency>
-            <groupId>javax.servlet.jsp</groupId>
-            <artifactId>jsp-api</artifactId>
-            <version>2.1</version>
+            <groupId>org.jboss.spec.javax.annotation</groupId>
+            <artifactId>jboss-annotations-api_1.1_spec</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- Import the JSF API, we use provided scope as the API is included
+    in JBoss AS 7 -->
+        <dependency>
+            <groupId>org.jboss.spec.javax.faces</groupId>
+            <artifactId>jboss-jsf-api_2.1_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- core library -->
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxrs</artifactId>
+            <version>${version.org.jboss.resteasy}</version>
+        </dependency>
+
+        <!-- JAXB support -->
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxb-provider</artifactId>
+            <version>${version.org.jboss.resteasy}</version>
         </dependency>
 
         <dependency>
@@ -53,39 +134,38 @@
             <version>1.0.13</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.3.161</version>
-        </dependency>
-
     </dependencies>
 
-    <profiles>
-        <profile>
-            <id>eap</id>
-
-            <build>
-                <finalName>monispan</finalName>
-                <plugins>
-                    <plugin>
-                        <groupId>org.jboss.as.plugins</groupId>
-                        <artifactId>jboss-as-maven-plugin</artifactId>
-                        <version>7.1.1.Final</version>
-                        <executions>
-                            <execution>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>deploy</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <port>${jboss-as-management-port}</port>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+    <build>
+        <!-- Set the name of the war, used as the context root when the app
+      is deployed -->
+        <finalName>jboss-as-monispan</finalName>
+        <plugins>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${war.plugin.version}</version>
+                <configuration>
+                    <!-- Java EE 6 doesn't require web.xml, Maven needs to catch
+                   up! -->
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+            <!-- JBoss AS plugin to deploy war -->
+            <plugin>
+                <groupId>org.jboss.as.plugins</groupId>
+                <artifactId>jboss-as-maven-plugin</artifactId>
+                <version>${jboss.as.plugin.version}</version>
+            </plugin>
+            <!-- Compiler plugin enforces Java 1.6 compatibility and activates
+          annotation processors -->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${compiler.plugin.version}</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

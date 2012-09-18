@@ -1,22 +1,17 @@
-package com.jboss.datagrid.monispan.cache;
+package org.jboss.as.quickstarts.datagrid.monispan.cache;
 
-import com.jboss.datagrid.monispan.servlet.StartupListener;
 import org.infinispan.configuration.cache.CacheMode;
 import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
-import org.infinispan.eviction.EvictionStrategy;
 import org.infinispan.manager.DefaultCacheManager;
-import org.infinispan.loaders.jdbc.mixed.JdbcMixedCacheStore;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * // TODO: Document this
+ * Cache Manager which provides functionality related to storing, evicting data in cache/data storage.
  *
- * @author anna.manukyan
- * @since 4.0
+ * @author Anna Manukyan
  */
 public final class CacheProvider {
 
@@ -37,12 +32,17 @@ public final class CacheProvider {
       return instance;
    }
 
+   /**
+    * Configures and starts cache with the provided name.
+    * @param cacheName     the new created cache name.
+    */
    public void startCache(final String cacheName) {
       if(cacheManager == null) {
          cacheManager = new DefaultCacheManager();
       }
 
-      long maxEntriesCount = (SECOND_IN_MILLIS / StartupListener.frequency) * DATA_SHOW_MINUTES;
+      Configuration config = new ConfigurationBuilder().clustering().cacheMode(CacheMode.LOCAL).build();
+      /*long maxEntriesCount = (SECOND_IN_MILLIS / StartupListener.frequency) * DATA_SHOW_MINUTES;
       Configuration config = new ConfigurationBuilder().clustering().cacheMode(CacheMode.LOCAL)
             .eviction().maxEntries((int) maxEntriesCount).strategy(EvictionStrategy.FIFO)
             .loaders().passivation(true).preload(false).shared(false)
@@ -71,23 +71,38 @@ public final class CacheProvider {
             .addProperty("createTableOnStartForStrings", "true")
             .addProperty("createTableOnStartForBinary", "true")
             .addProperty("databaseType", "H2")
-            .addProperty("datasourceJndiLocation", "java:jboss/datasources/ExampleDS").build();
+            .addProperty("datasourceJndiLocation", "java:jboss/datasources/ExampleDS").build();*/
 
       System.out.println(config);
 
       cacheManager.defineConfiguration(cacheName, config);
    }
 
+   /**
+    * Puts the given data into the cache.
+    * @param cacheName        the cache name to which the data should be stored.
+    * @param key              the key with which the data should be stored.
+    * @param value            the data to be stored.
+    */
    public void put(final String cacheName, final String key, final int value) {
       System.out.println("Putting " + cacheManager.getCache(cacheName).size());
       cacheManager.getCache(cacheName).put(key, value);
       System.out.println("Putted" + cacheManager.getCache(cacheName).size());
    }
 
+   /**
+    * Returns the cache object by the provided name.
+    * @param cacheName        the name of the cache to be provided.
+    * @return                 the cache object.
+    */
    public Map<String, String> getCache (final String cacheName) {
       return cacheManager.getCache(cacheName);
    }
 
+   /**
+    * Returns the Set of all available cache names.
+    * @return                 the set of cache names.
+    */
    public Set<String> getAllAvailableCaches() {
       return cacheManager.getCacheNames();
    }

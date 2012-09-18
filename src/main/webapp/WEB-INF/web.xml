@@ -5,14 +5,10 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
     <display-name>monispan</display-name>
-
-    <listener>
-        <listener-class>com.jboss.datagrid.monispan.servlet.StartupListener</listener-class>
-    </listener>
     
     <servlet>
         <servlet-name>ReportReceiver</servlet-name>
-        <servlet-class>com.jboss.datagrid.monispan.servlet.ReportReceiverServlet</servlet-class>
+        <servlet-class>org.jboss.as.quickstarts.datagrid.monispan.rest.ReportReceiver</servlet-class>
     </servlet>
     
     <servlet-mapping>

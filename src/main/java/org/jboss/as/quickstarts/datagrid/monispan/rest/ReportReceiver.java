@@ -1,22 +1,19 @@
-package com.jboss.datagrid.monispan.servlet;
+package org.jboss.as.quickstarts.datagrid.monispan.rest;
 
-import com.jboss.datagrid.monispan.cache.CacheProvider;
-
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
- * // TODO: Document this
+ * Servlet which receives reports regarding user statistics and places the data into the cache.
  *
- * @author anna.manukyan
- * @since 4.0
+ * @author Anna Manukyan
  */
-public class ReportReceiverServlet extends HttpServlet {
+@Path("/report")
+public class ReportReceiver {
 
    private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 
@@ -24,7 +21,17 @@ public class ReportReceiverServlet extends HttpServlet {
 
    public static final String NOK_RESPONSE = "nok";
 
-   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+   /**
+    * Responds to GET requests.
+    * @param request          the http request object.
+    * @param response         the http response object.
+    * @throws IOException
+    */
+   @GET
+   @Path("/report/{cpu}")
+   @Produces("text/plain")
+   public void doGet(@PathParam("node") String nodeName, @PathParam("userCount") int userCount, @PathParam("notifCount") int sentNotificationCount,
+                                @PathParam("subCount") int subscriptionCount, @PathParam("cancels") int cancellationCount) throws IOException {
       String nodeName = request.getParameter("node");
       String userCountStr = request.getParameter("count");
       PrintWriter out = response.getWriter();
@@ -43,6 +50,12 @@ public class ReportReceiverServlet extends HttpServlet {
       out.write(responseStr);
    }
 
+   /*
+    * The report processing method.
+    * @param nodeName            the node name received report from.
+    * @param userCount           the count of users received by request.
+    * @return                    OK response.
+   */
    private String receiveReport(String nodeName, int userCount) {
       System.out.println("CPU usage on " + nodeName + " is:" + userCount);
 
