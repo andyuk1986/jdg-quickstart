@@ -50,6 +50,9 @@ public class StartupListener implements SystemEventListener {
       System.out.println("The node number is: " + threadNum);
       System.out.println("The frequency is: " + frequency);
 
+      System.out.println("Starting Cache ...");
+      CacheProvider.getInstance().startCache();
+
       for(int i = 1; i <= threadNum; i++) {
          String nodeName = "node" + i;
          Reporter r = new Reporter(nodeName);
@@ -59,9 +62,7 @@ public class StartupListener implements SystemEventListener {
          System.out.println(cal.getTime());
          cal.add(Calendar.SECOND, i);
 
-         //t.schedule(r, cal.getTime(), frequency);
-         CacheProvider.getInstance().startCache(nodeName);
-
+         t.schedule(r, cal.getTime(), frequency);
          System.out.println("Thread is initialized.");
       }
    }

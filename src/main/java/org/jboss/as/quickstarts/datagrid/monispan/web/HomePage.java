@@ -1,10 +1,17 @@
 package org.jboss.as.quickstarts.datagrid.monispan.web;
 
+import org.jboss.as.quickstarts.datagrid.monispan.ReportStatisticsProvider;
 import org.jboss.as.quickstarts.datagrid.monispan.cache.CacheProvider;
+import org.jboss.as.quickstarts.datagrid.monispan.cache.CacheStatisticsProvider;
+import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
 
 import javax.inject.Named;
 import java.io.IOException;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * // TODO: Document this
@@ -15,12 +22,23 @@ import java.util.Set;
 @Named(value = "homePage")
 public class HomePage {
 
-   public String generateStatisticsChart() throws IOException {
-      Set<String> cacheNames = CacheProvider.getInstance().getAllAvailableCaches();
-      for (String cacheName : cacheNames) {
-         System.out.println("Cache value in cache " + cacheName + " is: " + CacheProvider.getInstance().getCache(cacheName).size());
-      }
+   public List<Report> generateStatisticsChart() throws IOException {
+      return ReportStatisticsProvider.getInstance().getReportStatistics();
+   }
 
-      return "anna";
+   /**
+    * Returns the infinispan statistics for view.
+    * @return        the list which contains entryset of infinispan statistics.
+    */
+   public List<Map.Entry<String, Long>> generateInfinispanStatistics() {
+      CacheStatisticsProvider statistics = new CacheStatisticsProvider();
+      Map<String, Long> stats = statistics.getCacheStatisticsAsMap();
+
+      return new ArrayList<Map.Entry<String, Long>>(stats.entrySet());
+   }
+
+   public String getAnna() {
+      Random r = new Random();
+      return "anna" + r.nextInt(100);
    }
 }

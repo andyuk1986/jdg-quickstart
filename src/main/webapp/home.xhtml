@@ -2,12 +2,94 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:jsflot="http://www.jsflot.org/taglib/jsflot"
+      xmlns:a4j="http://richfaces.org/a4j">
 
 <ui:composition template="template.xhtml">
 
    <ui:define name="content">
-      bareeeeeeeev :))))))
+      <a4j:region>
+         <h:form>
+            <!--<h:commandButton value="barev">
+               <a4j:ajax event="click" render="dataStats,chart,cacheStats" />
+            </h:commandButton>-->
+            <a4j:poll render="dataStats,chart,cacheStats" interval="3000" oncomplete="$(document).fire('dom:loaded')"/>
+         </h:form>
+      </a4j:region>
+      <h:form id="statisticsForm">
+            <h:dataTable value="#{homePage.generateStatisticsChart()}" var="report" style="border: 2px grey solid; margin: 20px;" rules="all"
+                         cellpadding="12" cellspacing="12" columnClasses="column,column,column,column,column" id="dataStats">
+               <h:column>
+                  <h:outputText value="${report.reportName}"/>
+               </h:column>
+               <h:column>
+                  <f:facet name="header">
+                     <p>User Count</p>
+                  </f:facet>
+                  <p id="userCount_#{report.nodeName}">
+                     <h:outputText value="#{report.userCount}" />
+                  </p>
+               </h:column>
+
+               <h:column>
+                  <f:facet name="header">
+                     <p>Sent Notification Count</p>
+                  </f:facet>
+                  <p id="notifCount_#{report.nodeName}">
+                     <h:outputText value="#{report.sentNotificationCount}" />
+                  </p>
+               </h:column>
+
+               <h:column>
+                  <f:facet name="header">
+                     <p>Subscriptions Count</p>
+                  </f:facet>
+                  <p id="subsCount_#{report.nodeName}">
+                     <h:outputText value="#{report.subscribtionCount}" />
+                  </p>
+               </h:column>
+
+               <h:column>
+                  <f:facet name="header">
+                     <p>Cancellations Count</p>
+                  </f:facet>
+                  <p id="cancCount_#{report.nodeName}">
+                     <h:outputText value="#{report.cancellationCount}" />
+                  </p>
+               </h:column>
+            </h:dataTable>
+            <script type="text/javascript">
+               $.noConflict();
+            </script>
+         <h:panelGroup id="chart">
+            <jsflot:flotChart id="valueTimeChart"
+                              value="#{chartMbean.chartSeries}"
+                              actionListener="#{chartMbean.chartActionListener}"
+                              height="#{chartMbean.chartData.height}"
+                              width="#{chartMbean.chartData.width}"
+                              mode="#{chartMbean.chartData.mode}"
+                              timeFormat="#{chartMbean.chartData.timeFormat}"
+                              title="#{chartMbean.chartData.title}"
+                              subtitle="#{chartMbean.chartData.subtitle}"
+                              chartType="#{chartMbean.chartData.chartType}">
+            </jsflot:flotChart>
+         </h:panelGroup>
+
+            <h2>
+               JDG Cache Usage Statistics
+            </h2>
+            <h:dataTable value="#{homePage.generateInfinispanStatistics()}" var="stat" style="border: 2px grey solid; margin: 20px;" rules="all"
+                         cellpadding="12" cellspacing="12" id="cacheStats">
+               <h:column>
+                  <p><h:outputText value="#{stat.key}" /></p>
+               </h:column>
+               <h:column>
+                  <p><h:outputText value="#{stat.value}" /></p>
+               </h:column>
+            </h:dataTable>
+      </h:form>
    </ui:define>
 
 </ui:composition>

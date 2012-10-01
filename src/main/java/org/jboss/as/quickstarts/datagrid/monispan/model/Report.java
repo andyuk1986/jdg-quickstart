@@ -11,6 +11,8 @@ import java.io.Serializable;
  * @since 4.0
  */
 public class Report implements Serializable {
+   private String reportName;
+   private String nodeName;
    private int userCount;
    private int sentNotificationCount;
    private int subscribtionCount;
@@ -19,11 +21,28 @@ public class Report implements Serializable {
    public Report() {
    }
 
-   public Report(final int userCount, final int sentNotificationCount, final int subscribtionCount, final int cancellationCount) {
+   public Report(final String nodeName, final int userCount, final int sentNotificationCount, final int subscribtionCount, final int cancellationCount) {
+      this.nodeName = nodeName;
       this.userCount = userCount;
       this.sentNotificationCount = sentNotificationCount;
       this.subscribtionCount = subscribtionCount;
       this.cancellationCount = cancellationCount;
+   }
+
+   public String getReportName() {
+      return reportName;
+   }
+
+   public void setReportName(String reportName) {
+      this.reportName = reportName;
+   }
+
+   public String getNodeName() {
+      return nodeName;
+   }
+
+   public void setNodeName(String nodeName) {
+      this.nodeName = nodeName;
    }
 
    public int getUserCount() {

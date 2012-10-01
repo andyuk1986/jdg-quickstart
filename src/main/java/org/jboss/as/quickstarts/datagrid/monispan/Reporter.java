@@ -15,7 +15,7 @@ import java.util.TimerTask;
  */
 public class Reporter extends TimerTask {
 
-   public static final String REPORT_URL = "http://localhost:8080/monispan/report";
+   public static final String REPORT_URL = "http://localhost:8180/jboss-as-monispan/rest/report";
    private String name;
 
    public Reporter(String name) {
@@ -35,9 +35,13 @@ public class Reporter extends TimerTask {
    private void report() throws Exception {
       Random rand = new Random();
       int sampleUserCount = rand.nextInt(10000);
+      int sentNotificationCount = rand.nextInt(20000);
+      int subscriptionCount = rand.nextInt(5000);
+      int cancellationCount= rand.nextInt(1000);
 
       StringBuffer urlStr = new StringBuffer();
-      urlStr.append(REPORT_URL).append("?node=").append(name).append("&count=").append(sampleUserCount);
+      urlStr.append(REPORT_URL).append("/").append(name).append("/").append(sampleUserCount).append("/").append(sentNotificationCount)
+            .append("/").append(subscriptionCount).append("/").append(cancellationCount);
 
       URL url = new URL(urlStr.toString());
       URLConnection conn = url.openConnection ();
