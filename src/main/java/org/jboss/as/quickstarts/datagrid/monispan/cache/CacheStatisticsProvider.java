@@ -32,11 +32,11 @@ public class CacheStatisticsProvider {
    public Map<String, Long> getCacheStatisticsAsMap() {
       Map<String, Long> stats = new HashMap<String, Long>();
 
-      stats.put("Total number of entries in the cache", statistics.getTotalNumberOfEntries());
-      stats.put("Current number of entries", (long) statistics.getCurrentNumberOfEntries());
-      stats.put("Number Of Evictions", statistics.getEvictions());
-      stats.put("Number of Retrievals", statistics.getRetrievals());
-      stats.put("Number of stores", statistics.getStores());
+      stats.put("Total number of entries in the cache", getTotalNumberOfEntries());
+      stats.put("Current number of entries", (long) getCurrentNumberOfEntries());
+      stats.put("Number Of Evictions", getEvictions());
+      stats.put("Number of Retrievals", getRetrievals());
+      stats.put("Number of stores", getStores());
 
       return stats;
    }
@@ -50,7 +50,7 @@ public class CacheStatisticsProvider {
    }
 
    public long getEvictions() {
-      return statistics.getEvictions();
+      return CacheProvider.getInstance().getNotifListener().getCounter();
    }
 
    public long getStores() {

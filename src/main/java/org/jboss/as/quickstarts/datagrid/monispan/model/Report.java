@@ -1,7 +1,5 @@
 package org.jboss.as.quickstarts.datagrid.monispan.model;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
@@ -12,21 +10,25 @@ import java.io.Serializable;
  */
 public class Report implements Serializable {
    private String reportName;
-   private String nodeName;
+   private String elemPrefix;
    private int userCount;
    private int sentNotificationCount;
    private int subscribtionCount;
    private int cancellationCount;
 
+   private String reportDate;
+
    public Report() {
    }
 
-   public Report(final String nodeName, final int userCount, final int sentNotificationCount, final int subscribtionCount, final int cancellationCount) {
-      this.nodeName = nodeName;
+   public Report(final String elemPrefix, final int userCount, final int sentNotificationCount, final int subscribtionCount,
+                 final int cancellationCount, final String reportDate) {
+      this.elemPrefix = elemPrefix;
       this.userCount = userCount;
       this.sentNotificationCount = sentNotificationCount;
       this.subscribtionCount = subscribtionCount;
       this.cancellationCount = cancellationCount;
+      this.reportDate = reportDate;
    }
 
    public String getReportName() {
@@ -37,12 +39,12 @@ public class Report implements Serializable {
       this.reportName = reportName;
    }
 
-   public String getNodeName() {
-      return nodeName;
+   public String getElemPrefix() {
+      return elemPrefix;
    }
 
-   public void setNodeName(String nodeName) {
-      this.nodeName = nodeName;
+   public void setElemPrefix(String elemPrefix) {
+      this.elemPrefix = elemPrefix;
    }
 
    public int getUserCount() {
@@ -75,5 +77,13 @@ public class Report implements Serializable {
 
    public void setCancellationCount(int cancellationCount) {
       this.cancellationCount = cancellationCount;
+   }
+
+   public String getReportDate() {
+      return reportDate;
+   }
+
+   public void setReportDate(String reportDate) {
+      this.reportDate = reportDate;
    }
 }

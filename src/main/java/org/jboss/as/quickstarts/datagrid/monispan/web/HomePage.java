@@ -36,9 +36,4 @@ public class HomePage {
 
       return new ArrayList<Map.Entry<String, Long>>(stats.entrySet());
    }
-
-   public String getAnna() {
-      Random r = new Random();
-      return "anna" + r.nextInt(100);
-   }
 }

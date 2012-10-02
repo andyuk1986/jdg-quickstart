@@ -33,6 +33,8 @@ public class StartupListener implements SystemEventListener {
    //@TODO change
    public static long frequency;
 
+   public static long threadNum;
+
    @Override
    public void processEvent(SystemEvent systemEvent) throws AbortProcessingException {
       System.out.println("Context is initialized.");
@@ -44,7 +46,7 @@ public class StartupListener implements SystemEventListener {
          e.printStackTrace();
       }
 
-      int threadNum = Integer.parseInt(prop.getProperty(NODE_NUMBER, DEFAULT_NODE_NUMBER));
+      threadNum = Integer.parseInt(prop.getProperty(NODE_NUMBER, DEFAULT_NODE_NUMBER));
       frequency = Integer.parseInt(prop.getProperty(EXECUTION_FREQUENCY, DEFAULT_EXECUTION_FREQUENCY));
 
       System.out.println("The node number is: " + threadNum);
@@ -52,15 +54,14 @@ public class StartupListener implements SystemEventListener {
 
       System.out.println("Starting Cache ...");
       CacheProvider.getInstance().startCache();
+      Calendar cal = Calendar.getInstance();
 
       for(int i = 1; i <= threadNum; i++) {
          String nodeName = "node" + i;
          Reporter r = new Reporter(nodeName);
          Timer t = new Timer();
 
-         Calendar cal = Calendar.getInstance();
-         System.out.println(cal.getTime());
-         cal.add(Calendar.SECOND, i);
+         cal.add(Calendar.SECOND, 10);
 
          t.schedule(r, cal.getTime(), frequency);
          System.out.println("Thread is initialized.");

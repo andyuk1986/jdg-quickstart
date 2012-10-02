@@ -46,13 +46,13 @@ public final class ReportStatisticsProvider {
          cancellationSum += report.getCancellationCount();
       }
 
-      Report totalReport = new Report("total", userCountSum, sentNotifSum, subscriptionSum, cancellationSum);
+      Report totalReport = new Report("total", userCountSum, sentNotifSum, subscriptionSum, cancellationSum, null);
       totalReport.setReportName("Total Numbers");
       reportList.add(totalReport);
 
       int cacheSize = cacheElems.size();
       Report averageReport = new Report("avg", userCountSum / cacheSize, sentNotifSum / cacheSize,
-                                        subscriptionSum / cacheSize, cancellationSum / cacheSize);
+                                        subscriptionSum / cacheSize, cancellationSum / cacheSize, null);
       averageReport.setReportName("Average Numbers");
       reportList.add(averageReport);
       return reportList;
