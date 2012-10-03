@@ -9,6 +9,7 @@ import org.jsflot.xydata.XYDataList;
 import org.jsflot.xydata.XYDataPoint;
 import org.jsflot.xydata.XYDataSetCollection;
 
+import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Named;
@@ -27,7 +28,9 @@ public class ChartMBean {
    private XYDataList series3DataList = new XYDataList();
    private XYDataList series4DataList = new XYDataList();
    private FlotChartRendererData chartData;
-   private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+   private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.ddHH:mm:ss");
+
+   public static final String PARAM_FULL_REPORT = "full";
 
    public ChartMBean() {
       // TODO Auto-generated constructor stub
@@ -35,19 +38,39 @@ public class ChartMBean {
       chartData.setMode("Time");
       chartData.setWidth("625");
 
-      Map<String, Report> cacheData = CacheProvider.getInstance().getCache(CacheProvider.REPORT_CACHE_NAME);
+      String param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(PARAM_FULL_REPORT);
       TreeSet<Date> orderedSet = new TreeSet<Date>();
-      for(String reportDate : cacheData.keySet()) {
-         Date d = null;
-         try {
-            d = formatter.parse(reportDate);
-         } catch (ParseException e) {
-            e.printStackTrace();
+      Map<String, Report> cacheData = null;
+
+
+      if(param != null && param.equals(true)) {
+         cacheData = CacheProvider.getInstance().getCache(CacheProvider.REPORT_CACHE_NAME);
+         for(String reportDate : cacheData.keySet()) {
+            Date d = null;
+            try {
+               d = formatter.parse(reportDate);
+            } catch (ParseException e) {
+               e.printStackTrace();
+            }
+            if(d == null) {
+               d = new Date();
+            }
+            orderedSet.add(d);
          }
-         if(d == null) {
-            d = new Date();
+      } else {
+         cacheData = CacheProvider.getInstance().getCache(CacheProvider.REPORT_CACHE_NAME);
+         for(String reportDate : cacheData.keySet()) {
+            Date d = null;
+            try {
+               d = formatter.parse(reportDate);
+            } catch (ParseException e) {
+               e.printStackTrace();
+            }
+            if(d == null) {
+               d = new Date();
+            }
+            orderedSet.add(d);
          }
-         orderedSet.add(d);
       }
 
       for(Date d : orderedSet) {

@@ -28,9 +28,14 @@ public final class ReportStatisticsProvider {
       return instance;
    }
 
-   public List<Report> getReportStatistics() {
+   public List<Report> getReportStatistics(final boolean isFullReport) {
       List<Report> reportList = new ArrayList<Report>();
-      Map<String, Report> cacheElems = CacheProvider.getInstance().getCache(CacheProvider.REPORT_CACHE_NAME);
+      Map<String, Report> cacheElems = null;
+      if(isFullReport) {
+         cacheElems = CacheProvider.getInstance().getCache(CacheProvider.REPORT_CACHE_NAME);
+      } else {
+         cacheElems = CacheProvider.getInstance().getCache(CacheProvider.REPORT_CACHE_NAME);
+      }
 
       int userCountSum = 0;
       int sentNotifSum = 0;
@@ -44,6 +49,8 @@ public final class ReportStatisticsProvider {
          sentNotifSum += report.getSentNotificationCount();
          subscriptionSum += report.getSubscribtionCount();
          cancellationSum += report.getCancellationCount();
+
+         System.out.println("The key: " + reportEntry.getKey());
       }
 
       Report totalReport = new Report("total", userCountSum, sentNotifSum, subscriptionSum, cancellationSum, null);

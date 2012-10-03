@@ -22,8 +22,8 @@ import java.util.Random;
 @Named(value = "homePage")
 public class HomePage {
 
-   public List<Report> generateStatisticsChart() throws IOException {
-      return ReportStatisticsProvider.getInstance().getReportStatistics();
+   public List<Report> generateStatisticsChart(final boolean isFullReport) throws IOException {
+      return ReportStatisticsProvider.getInstance().getReportStatistics(isFullReport);
    }
 
    /**

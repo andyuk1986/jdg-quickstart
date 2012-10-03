@@ -24,7 +24,7 @@ import java.util.Map;
 @Path("/report")
 public class ReportReceiverRestService {
 
-   private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+   private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.ddHH:mm:ss");
    private static Map<String, List<Report>> groupMap = new HashMap<String, List<Report>>();
 
    public static final String OK_RESPONSE = "ok";
@@ -47,7 +47,7 @@ public class ReportReceiverRestService {
    */
    private String processReport(Report report) {
       CacheProvider provider = CacheProvider.getInstance();
-      String key = formatter.format(new Date());
+      String key = report.getReportDate();
 
       synchronized (groupMap) {
          List<Report> reportList = groupMap.get(key);
@@ -75,7 +75,7 @@ public class ReportReceiverRestService {
             groupMap.remove(key);
          }
 
-         //System.out.println("The group map size is:  " + groupMap.size());
+         System.out.println("The group map size is:  " + groupMap.size());
       }
 
       return OK_RESPONSE;

@@ -65,7 +65,7 @@ public final class CacheProvider {
 
       System.out.println("Max entries count: " + maxEntriesCount);
       Configuration config = new ConfigurationBuilder().jmxStatistics().enable().clustering().cacheMode(CacheMode.LOCAL)
-            .eviction().maxEntries((int) maxEntriesCount).strategy(EvictionStrategy.FIFO)
+            .eviction().maxEntries((int) maxEntriesCount).strategy(EvictionStrategy.LIRS)
             .loaders().passivation(true).preload(false).shared(false)
             .addCacheLoader().cacheLoader(new JdbcStringBasedCacheStore()).fetchPersistentState(false).purgeOnStartup(false)
             .addProperty("stringsTableNamePrefix", "monispan")
@@ -73,18 +73,17 @@ public final class CacheProvider {
             .addProperty("dataColumnName", "data")
             .addProperty("timestampColumnName", "create_ts")
             .addProperty("timestampColumnType", "BIGINT")
-            //.addProperty("connectionFactoryClass", "org.infinispan.loaders.jdbc.connectionfactory.ManagedConnectionFactory")
-            .addProperty("connectionFactoryClass", "org.infinispan.loaders.jdbc.connectionfactory.PooledConnectionFactory")
-            .addProperty("connectionUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1")
-            .addProperty("userName", "sa")
-            .addProperty("password", "sa")
-            .addProperty("driverClass", "org.h2.Driver")
+            .addProperty("connectionFactoryClass", "org.infinispan.loaders.jdbc.connectionfactory.ManagedConnectionFactory")
+            //.addProperty("connectionUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1")
+            //.addProperty("userName", "sa")
+            //.addProperty("password", "sa")
+            //.addProperty("driverClass", "org.h2.Driver")
             .addProperty("idColumnType", "VARCHAR")
             .addProperty("dataColumnType", "BINARY")
             .addProperty("dropTableOnExit", "false")
             .addProperty("createTableOnStart", "true")
             .addProperty("databaseType", "H2")
-            //.addProperty("datasourceJndiLocation", "java:jboss/datasources/ExampleDS")
+            .addProperty("datasourceJndiLocation", "java:jboss/datasources/ExampleDS")
             .build();
 
       System.out.println("Lock Aquisitoin time out: " + config.locking().lockAcquisitionTimeout());

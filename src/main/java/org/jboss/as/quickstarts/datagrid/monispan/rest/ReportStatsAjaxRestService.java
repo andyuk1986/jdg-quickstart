@@ -20,7 +20,8 @@ public class ReportStatsAjaxRestService {
 
    @GET
    @Produces("application/json")
-   public List<Report> updateReportStats() {
-      return ReportStatisticsProvider.getInstance().getReportStatistics();
+   @Path("{full}")
+   public List<Report> updateReportStats(@PathParam("full") boolean isFullReport) {
+      return ReportStatisticsProvider.getInstance().getReportStatistics(isFullReport);
    }
 }

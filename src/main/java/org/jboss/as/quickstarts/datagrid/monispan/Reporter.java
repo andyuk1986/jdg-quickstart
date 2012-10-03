@@ -44,7 +44,7 @@ public class Reporter extends TimerTask {
       int cancellationCount= rand.nextInt(1000);
 
       String dateFormatted = formatter.format(new Date());
-
+      System.out.println(dateFormatted);
       StringBuffer urlStr = new StringBuffer();
       urlStr.append(REPORT_URL).append("/").append(name).append("/").append(sampleUserCount).append("/").append(sentNotificationCount)
             .append("/").append(subscriptionCount).append("/").append(cancellationCount).append("/").append(dateFormatted);

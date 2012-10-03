@@ -18,10 +18,10 @@
    <div id="wrapper">
 
       <ul class="menu">
-         <li><a href="#home" class="active">Home</a></li>
-         <li><a href="#">Full Data</a></li>
-         <div class="cb"></div>
+         <li><a href="http://localhost:8180/jboss-as-monispan/home.jsf" class="#{param['full'] != null and param['full'] == 'true' ? '' : 'active'}">Home</a></li>
+         <li><a href="http://localhost:8180/jboss-as-monispan/home.jsf?full=true" class="#{param['full'] != null and param['full'] == 'true' ? 'active' : ''}">Full Data</a></li>
       </ul>
+      <div class="cb"></div>
 
       <div class="cb"></div>
       <div class="container-bottom" id="container">
@@ -29,9 +29,6 @@
             <div class="container-middle">
 
                <div id="home" class="visible section">
-                  <!--div class="profileimage">
-
-                        </div-->
                   <div class="profileinfo">
 
                      <h1>Monispan</h1>

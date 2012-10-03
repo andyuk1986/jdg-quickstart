@@ -1,14 +1,14 @@
-function updateData() {
+function updateData(isFullReportNeeded) {
     jQuery("#container").block({
         message: null
     });
     jQuery.ajax({
-        url: 'rest/freshrep',
+        url: 'rest/freshrep' + (isFullReportNeeded ? "/true" : ""),
         async: false,
         success: function(data) {
                for(var i = 0; i < data.length; i++) {
                    var entry = data[i];
-                   var type = entry.nodeName
+                   var type = entry.elemPrefix
 
                    jQuery("#userCount_" + type).html(entry.userCount)
                    jQuery("#notifCount_" + type).html(entry.sentNotificationCount)
