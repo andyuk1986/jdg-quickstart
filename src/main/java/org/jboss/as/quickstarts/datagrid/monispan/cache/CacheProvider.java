@@ -157,7 +157,6 @@ public final class CacheProvider {
       public synchronized void handlePassivationActivation(Event event) {
          if(event.getType() == Event.Type.CACHE_ENTRY_EVICTED) {
             counter++;
-            System.out.println("Entry evicted: " + counter);
          }
       }
 
