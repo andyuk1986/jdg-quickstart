@@ -5,6 +5,10 @@ import org.jboss.as.quickstarts.datagrid.monispan.cache.CacheProvider;
 import org.jboss.as.quickstarts.datagrid.monispan.cache.CacheStatisticsProvider;
 import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Produces;
+import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,8 +25,13 @@ import java.util.Random;
 @Named(value = "homePage")
 public class HomePage {
 
-   public List<Report> generateStatisticsChart(final boolean isFullReport) throws IOException {
-      return ReportStatisticsProvider.getInstance().getReportStatistics(isFullReport);
+   private static final String PARAM_FULL_REPORT = "full";
+
+   @Produces @RequestScoped
+   @Named("statisticsChart")
+   public List<Report> generateStatisticsChart() throws IOException {
+      String param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(PARAM_FULL_REPORT);
+      return ReportStatisticsProvider.getInstance().getReportStatistics(param != null && param.equals("true"));
    }
 
    /**

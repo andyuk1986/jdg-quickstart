@@ -8,6 +8,8 @@ import org.jsflot.xydata.XYDataList;
 import org.jsflot.xydata.XYDataPoint;
 import org.jsflot.xydata.XYDataSetCollection;
 
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Produces;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import java.text.ParseException;
@@ -34,7 +36,7 @@ public class ChartMBean {
    private XYDataList series2DataList = new XYDataList();
    private XYDataList series3DataList = new XYDataList();
    private XYDataList series4DataList = new XYDataList();
-   private FlotChartRendererData chartData;
+   private static FlotChartRendererData chartData = new FlotChartRendererData();
 
    private static final String CHART_MODE = "Time";
    private static final String CHART_WIDTH_IN_PIXELS = "625";
@@ -43,8 +45,7 @@ public class ChartMBean {
     * Constructor, which is called when JSFlot component is initialized. Gets the data from the cache, full or partial
     * dependent on the parameter from request and fills the corresponding collections for further processing.
     */
-   public ChartMBean() {
-      chartData = new FlotChartRendererData();
+   private void generateSeriesData() {
       chartData.setMode(CHART_MODE);
       chartData.setWidth(CHART_WIDTH_IN_PIXELS);
 
@@ -69,7 +70,6 @@ public class ChartMBean {
       series2DataList.setLabel("Sent Notification Count");
       series3DataList.setLabel("Subscription Count");
       series4DataList.setLabel("Cancellation Count");
-
    }
 
    private Set<Date> getSetOfKeys(Map<String, Report> cacheData) {
@@ -114,7 +114,11 @@ public class ChartMBean {
     * Returns chart series. They are 4 - user counts, sent notifications count, subscription and cancellation counts.
     * @return        the chart series.
     */
+   @Produces @RequestScoped
+   @Named("chartSeriesData")
    public XYDataSetCollection getChartSeries() {
+      generateSeriesData();
+
       XYDataSetCollection collection = new XYDataSetCollection();
 
       collection.addDataList(getChartDataList(series1DataList));

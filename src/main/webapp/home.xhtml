@@ -17,7 +17,7 @@
          </h:form>
       </a4j:region>
       <h:form id="statisticsForm">
-            <h:dataTable value="#{homePage.generateStatisticsChart(param['full'])}" var="report" style="border: 2px grey solid; margin: 20px;" rules="all"
+            <h:dataTable value="#{statisticsChart}" var="report" style="border: 2px grey solid; margin: 20px;" rules="all"
                          cellpadding="12" cellspacing="12" columnClasses="column,column,column,column,column" id="dataStats">
                <h:column>
                   <h:outputText value="${report.reportName}"/>
@@ -63,8 +63,7 @@
             </script>
          <h:panelGroup id="chart">
             <jsflot:flotChart id="valueTimeChart"
-                              value="#{chartMbean.chartSeries}"
-                              actionListener="#{chartMbean.chartActionListener}"
+                              value="#{chartSeriesData}"
                               height="#{chartMbean.chartData.height}"
                               width="#{chartMbean.chartData.width}"
                               mode="#{chartMbean.chartData.mode}"
