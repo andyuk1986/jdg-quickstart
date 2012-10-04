@@ -10,14 +10,18 @@ import javax.ws.rs.Produces;
 import java.util.List;
 
 /**
- * // TODO: Document this
+ * Rest service supporting /freshrep url, and which returns the Report for total and average numbers as a json.
  *
- * @author anna.manukyan
- * @since 4.0
+ * @author Anna Manukyan
  */
 @Path("/freshrep")
 public class ReportStatsAjaxRestService {
 
+   /**
+    * Supports GET request, which gets parameter, true or false which means - full or partial report.
+    * @param isFullReport           identifies whether full or partial report is needed.
+    * @return                       the List containing Total and Average report as a JSON.
+    */
    @GET
    @Produces("application/json")
    @Path("{full}")

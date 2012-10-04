@@ -3,7 +3,6 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:jsflot="http://www.jsflot.org/taglib/jsflot"
       xmlns:a4j="http://richfaces.org/a4j">
 
@@ -12,7 +11,7 @@
    <ui:define name="content">
       <a4j:region>
          <h:form>
-            <a4j:poll render="dataStats,chart,cacheStats" interval="3000" oncomplete="$(document).fire('dom:loaded')">
+            <a4j:poll render="dataStats,chart,cacheStats" interval="6000" oncomplete="$(document).fire('dom:loaded')">
                <a4j:param name="full" value="#{param['full']}" />
             </a4j:poll>
          </h:form>

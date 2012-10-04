@@ -26,21 +26,34 @@ import java.util.Set;
  * @author Anna Manukyan
  */
 public final class CacheProvider {
+   /**
+    * Constant - the number of seconds in milliseconds.
+    */
+   public static final long SECOND_IN_MILLIS = 60000;
+   /**
+    * The minutes during which the statistics should be shown.
+    */
+   public static final int DATA_SHOW_MINUTES = 5;
+   /**
+    * The name of the reporting cache.
+    */
+   public static final String REPORT_CACHE_NAME = "reportingCache";
+   /**
+    * The name of the Infinispan async executor property.
+    */
+   private static final String MAX_THREADS_PROP_NAME = "maxThreads";
 
    private static CacheProvider instance;
    private DefaultCacheManager cacheManager;
    private AsyncNotifListener notifListener;
 
-   public static final long SECOND_IN_MILLIS = 60000;
-   public static final int DATA_SHOW_MINUTES = 5;
-
-   public static final String REPORT_CACHE_NAME = "reportingCache";
-
-   private static final String MAX_THREADS_PROP_NAME = "maxThreads";
-
    private CacheProvider() {
    }
 
+   /**
+    * Returns the single instance of this class.
+    * @return           the single instance of this class.
+    */
    public static CacheProvider getInstance() {
       if(instance == null) {
          instance = new CacheProvider();
@@ -50,7 +63,10 @@ public final class CacheProvider {
    }
 
    /**
-    * Configures and starts cache with the provided name.
+    * Configures and starts cache with the provided name. The cache is configured in the following way:
+    *     no clustering is activated, eviction is set with LRU strategy,
+    *     the JDBCStringBasedCacheStore is used, for storing part of the data and uses H2 database.
+    *
     */
    public void startCache() {
       if(cacheManager == null) {
@@ -63,9 +79,8 @@ public final class CacheProvider {
 
       long maxEntriesCount = (SECOND_IN_MILLIS / StartupListener.frequency) * DATA_SHOW_MINUTES;
 
-      System.out.println("Max entries count: " + maxEntriesCount);
       Configuration config = new ConfigurationBuilder().jmxStatistics().enable().clustering().cacheMode(CacheMode.LOCAL)
-            .eviction().maxEntries((int) maxEntriesCount).strategy(EvictionStrategy.LIRS)
+            .eviction().maxEntries((int) maxEntriesCount).strategy(EvictionStrategy.LRU)
             .loaders().passivation(true).preload(false).shared(false)
             .addCacheLoader().cacheLoader(new JdbcStringBasedCacheStore()).fetchPersistentState(false).purgeOnStartup(false)
             .addProperty("stringsTableNamePrefix", "monispan")
@@ -74,10 +89,6 @@ public final class CacheProvider {
             .addProperty("timestampColumnName", "create_ts")
             .addProperty("timestampColumnType", "BIGINT")
             .addProperty("connectionFactoryClass", "org.infinispan.loaders.jdbc.connectionfactory.ManagedConnectionFactory")
-            //.addProperty("connectionUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1")
-            //.addProperty("userName", "sa")
-            //.addProperty("password", "sa")
-            //.addProperty("driverClass", "org.h2.Driver")
             .addProperty("idColumnType", "VARCHAR")
             .addProperty("dataColumnType", "BINARY")
             .addProperty("dropTableOnExit", "false")
@@ -86,7 +97,6 @@ public final class CacheProvider {
             .addProperty("datasourceJndiLocation", "java:jboss/datasources/ExampleDS")
             .build();
 
-      System.out.println("Lock Aquisitoin time out: " + config.locking().lockAcquisitionTimeout());
       notifListener = new AsyncNotifListener();
 
       cacheManager.defineConfiguration(REPORT_CACHE_NAME, config);
@@ -116,9 +126,7 @@ public final class CacheProvider {
     * @param report           the report to be stored in the cache.
     */
    public void put(final String cacheName, final String key, final Report report) {
-      //System.out.println("Putting " + cacheManager.getCache(cacheName).size());
       cacheManager.getCache(cacheName).putIfAbsent(key, report);
-      //System.out.println("Putted" + cacheManager.getCache(cacheName).size());
    }
 
    /**
@@ -139,11 +147,12 @@ public final class CacheProvider {
    }
 
    /**
-    * Custom listener for performing all verifications.
+    * Custom listener for tracking evictions number.
     */
    @Listener(sync=false)
    public class AsyncNotifListener {
       private int counter = 0;
+
       @CacheEntriesEvicted
       public synchronized void handlePassivationActivation(Event event) {
          if(event.getType() == Event.Type.CACHE_ENTRY_EVICTED) {
@@ -152,6 +161,11 @@ public final class CacheProvider {
          }
       }
 
+      /**
+       * Returns the number of total evictions during app lifetime.
+       * @return                 the total evictions number.
+       *
+       */
       public int getCounter() {
          return counter;
       }

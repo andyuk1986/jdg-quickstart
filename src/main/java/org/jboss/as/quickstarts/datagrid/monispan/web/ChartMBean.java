@@ -1,80 +1,65 @@
 package org.jboss.as.quickstarts.datagrid.monispan.web;
 
+import org.jboss.as.quickstarts.datagrid.monispan.ReportStatisticsProvider;
 import org.jboss.as.quickstarts.datagrid.monispan.cache.CacheProvider;
 import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
-import org.jsflot.components.FlotChartClickedEvent;
-import org.jsflot.components.FlotChartDraggedEvent;
 import org.jsflot.components.FlotChartRendererData;
 import org.jsflot.xydata.XYDataList;
 import org.jsflot.xydata.XYDataPoint;
 import org.jsflot.xydata.XYDataSetCollection;
 
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
-import javax.faces.event.ValueChangeEvent;
 import javax.inject.Named;
-import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
+/**
+ * Managed bean for viewing the chart of statistics. The chart is drawn using JSFlot, so the class is used by JSFlot
+ * component.
+ *
+ * @author Anna Manukyan
+ */
 @Named("chartMbean")
 public class ChartMBean {
+
+   /**
+    * Parameter name for the identifying full or partial reports.
+    */
+   public static final String PARAM_FULL_REPORT = "full";
 
    private XYDataList series1DataList = new XYDataList();
    private XYDataList series2DataList = new XYDataList();
    private XYDataList series3DataList = new XYDataList();
    private XYDataList series4DataList = new XYDataList();
    private FlotChartRendererData chartData;
-   private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.ddHH:mm:ss");
 
-   public static final String PARAM_FULL_REPORT = "full";
+   private static final String CHART_MODE = "Time";
+   private static final String CHART_WIDTH_IN_PIXELS = "625";
 
+   /**
+    * Constructor, which is called when JSFlot component is initialized. Gets the data from the cache, full or partial
+    * dependent on the parameter from request and fills the corresponding collections for further processing.
+    */
    public ChartMBean() {
-      // TODO Auto-generated constructor stub
       chartData = new FlotChartRendererData();
-      chartData.setMode("Time");
-      chartData.setWidth("625");
+      chartData.setMode(CHART_MODE);
+      chartData.setWidth(CHART_WIDTH_IN_PIXELS);
 
       String param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(PARAM_FULL_REPORT);
-      TreeSet<Date> orderedSet = new TreeSet<Date>();
       Map<String, Report> cacheData = null;
 
-
       if(param != null && param.equals(true)) {
-         cacheData = CacheProvider.getInstance().getCache(CacheProvider.REPORT_CACHE_NAME);
-         for(String reportDate : cacheData.keySet()) {
-            Date d = null;
-            try {
-               d = formatter.parse(reportDate);
-            } catch (ParseException e) {
-               e.printStackTrace();
-            }
-            if(d == null) {
-               d = new Date();
-            }
-            orderedSet.add(d);
-         }
+         cacheData = ReportStatisticsProvider.getInstance().getAllEntriesFromCache();
       } else {
          cacheData = CacheProvider.getInstance().getCache(CacheProvider.REPORT_CACHE_NAME);
-         for(String reportDate : cacheData.keySet()) {
-            Date d = null;
-            try {
-               d = formatter.parse(reportDate);
-            } catch (ParseException e) {
-               e.printStackTrace();
-            }
-            if(d == null) {
-               d = new Date();
-            }
-            orderedSet.add(d);
-         }
       }
 
+      Set<Date> orderedSet = getSetOfKeys(cacheData);
       for(Date d : orderedSet) {
-         Report entry = cacheData.get(formatter.format(d));
+         Report entry = cacheData.get(ReportStatisticsProvider.GENERAL_DATE_FORMATTER.format(d));
          series1DataList.addDataPoint(new XYDataPoint(d.getTime(), entry.getUserCount()));
          series2DataList.addDataPoint(new XYDataPoint(d.getTime(), entry.getSentNotificationCount()));
          series3DataList.addDataPoint(new XYDataPoint(d.getTime(), entry.getSubscribtionCount()));
@@ -85,6 +70,25 @@ public class ChartMBean {
       series3DataList.setLabel("Subscription Count");
       series4DataList.setLabel("Cancellation Count");
 
+   }
+
+   private Set<Date> getSetOfKeys(Map<String, Report> cacheData) {
+      Set<Date> orderedSet = new TreeSet<Date>();
+
+      for(String reportDate : cacheData.keySet()) {
+         Date d = null;
+         try {
+            d = ReportStatisticsProvider.GENERAL_DATE_FORMATTER.parse(reportDate);
+         } catch (ParseException e) {
+            e.printStackTrace();
+         }
+         if(d == null) {
+            d = new Date();
+         }
+         orderedSet.add(d);
+      }
+
+      return orderedSet;
    }
 
    private XYDataList getChartDataList(XYDataList seriesDataList) {
@@ -106,6 +110,10 @@ public class ChartMBean {
       return currentSeries1DataList;
    }
 
+   /**
+    * Returns chart series. They are 4 - user counts, sent notifications count, subscription and cancellation counts.
+    * @return        the chart series.
+    */
    public XYDataSetCollection getChartSeries() {
       XYDataSetCollection collection = new XYDataSetCollection();
 
@@ -155,17 +163,5 @@ public class ChartMBean {
 
    public void setChartData(FlotChartRendererData chartData) {
       this.chartData = chartData;
-   }
-
-   public void chartActionListener(ActionEvent event) {
-      if (event instanceof FlotChartClickedEvent) {
-
-      } else if (event instanceof FlotChartDraggedEvent) {
-
-      }
-   }
-
-   public void testChartDraggedAction(FlotChartDraggedEvent dragEvent) {
-      System.out.println("chartDraggedAction");
    }
 }

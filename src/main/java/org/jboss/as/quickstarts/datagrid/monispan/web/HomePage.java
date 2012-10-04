@@ -14,10 +14,9 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * // TODO: Document this
+ * Managed bean for view.
  *
- * @author anna.manukyan
- * @since 4.0
+ * @author Anna Manukyan
  */
 @Named(value = "homePage")
 public class HomePage {

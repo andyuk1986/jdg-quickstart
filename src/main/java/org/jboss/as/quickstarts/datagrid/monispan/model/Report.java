@@ -3,10 +3,9 @@ package org.jboss.as.quickstarts.datagrid.monispan.model;
 import java.io.Serializable;
 
 /**
- * // TODO: Document this
+ * Represents the report object. Contains all necessary fields for further use.
  *
- * @author anna.manukyan
- * @since 4.0
+ * @author Anna Manukyan
  */
 public class Report implements Serializable {
    private String reportName;

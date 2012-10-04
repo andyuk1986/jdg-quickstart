@@ -6,10 +6,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * // TODO: Document this
+ * Is used by REST for initializing the REST services.
  *
- * @author anna.manukyan
- * @since 4.0
+ * @author Anna Manukyan
  */
 @ApplicationPath("/rest")
 public class MonispanApplication extends Application {

@@ -1,7 +1,6 @@
 package org.jboss.as.quickstarts.datagrid.monispan.rest;
 
 import org.jboss.as.quickstarts.datagrid.monispan.cache.CacheStatisticsProvider;
-import org.jboss.as.quickstarts.datagrid.monispan.model.CacheStats;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

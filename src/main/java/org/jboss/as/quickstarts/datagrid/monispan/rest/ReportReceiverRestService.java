@@ -1,5 +1,6 @@
 package org.jboss.as.quickstarts.datagrid.monispan.rest;
 
+import org.jboss.as.quickstarts.datagrid.monispan.ReportStatisticsProvider;
 import org.jboss.as.quickstarts.datagrid.monispan.cache.CacheProvider;
 import org.jboss.as.quickstarts.datagrid.monispan.jsf.StartupListener;
 import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
@@ -9,7 +10,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,22 +18,21 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Servlet which receives reports regarding user statistics and places the data into the cache.
+ * Servlet which receives reports regarding user statistics. All data is processed and stored in the cache.
  *
  * @author Anna Manukyan
  */
 @Path("/report")
 public class ReportReceiverRestService {
-
-   private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.ddHH:mm:ss");
    private static Map<String, List<Report>> groupMap = new HashMap<String, List<Report>>();
 
    public static final String OK_RESPONSE = "ok";
+   private static Date firstReportDate = null;
 
    @GET
-   @Path("{node}/{userCount}/{notifCount}/{subCount}/{cancels}/{date}")
+   @Path("{userCount}/{notifCount}/{subCount}/{cancels}/{date}")
    @Produces("text/plain")
-   public String doGet(@PathParam("node") String nodeName, @PathParam("userCount") int userCount, @PathParam("notifCount") int sentNotificationCount,
+   public String doGet(@PathParam("userCount") int userCount, @PathParam("notifCount") int sentNotificationCount,
                                 @PathParam("subCount") int subscriptionCount, @PathParam("cancels") int cancellationCount,
                                 @PathParam("date") String date) throws IOException {
 
@@ -49,35 +49,45 @@ public class ReportReceiverRestService {
       CacheProvider provider = CacheProvider.getInstance();
       String key = report.getReportDate();
 
+      setFirstReportDate(report);
       synchronized (groupMap) {
-         List<Report> reportList = groupMap.get(key);
-         if(reportList == null) {
-            reportList = new ArrayList<Report>();
-            groupMap.put(key, reportList);
+         List<Report> reportSet = groupMap.get(key);
+         if(reportSet == null) {
+            reportSet = new ArrayList<Report>();
+            groupMap.put(key, reportSet);
          }
 
-         reportList.add(report);
-         if(reportList.size() == StartupListener.threadNum) {
-            int userCountSum = 0;
-            int sentNotifSum = 0;
-            int subscriptionSum = 0;
-            int cancellationSum = 0;
-            for(Report rep : reportList) {
-               userCountSum += rep.getUserCount();
-               sentNotifSum += rep.getSentNotificationCount();
-               subscriptionSum += rep.getSubscribtionCount();
-               cancellationSum += rep.getCancellationCount();
-            }
-
-            Report finalReport = new Report(null, userCountSum, sentNotifSum, subscriptionSum, cancellationSum, key);
+         reportSet.add(report);
+         if(reportSet.size() == StartupListener.threadNum) {
+            Report finalReport = ReportStatisticsProvider.getInstance().getTotalReport(reportSet);
             provider.put(CacheProvider.REPORT_CACHE_NAME, key, finalReport);
 
             groupMap.remove(key);
          }
-
-         System.out.println("The group map size is:  " + groupMap.size());
       }
 
       return OK_RESPONSE;
+   }
+
+   /**
+    * Stores the date when the first report has been sent.
+    * @param report        the report from which the date should be picked.
+    */
+   public synchronized void setFirstReportDate(Report report) {
+      if(firstReportDate == null) {
+         try {
+            firstReportDate = ReportStatisticsProvider.GENERAL_DATE_FORMATTER.parse(report.getReportDate());
+         } catch (ParseException e) {
+            e.printStackTrace();
+         }
+      }
+   }
+
+   /**
+    * Returns the date when the first report has been sent.
+    * @return              the date when the first report has been sent.
+    */
+   public static Date getFirstReportDate() {
+      return firstReportDate;
    }
 }
