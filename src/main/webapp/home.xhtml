@@ -18,7 +18,7 @@
       </a4j:region>
       <h:form id="statisticsForm">
             <h:dataTable value="#{statisticsChart}" var="report" style="border: 2px grey solid; margin: 20px;" rules="all"
-                         cellpadding="12" cellspacing="12" columnClasses="column,column,column,column,column" id="dataStats">
+                         cellpadding="12" cellspacing="12" columnClasses="column,column,column" id="dataStats">
                <h:column>
                   <h:outputText value="${report.reportName}"/>
                </h:column>
@@ -37,24 +37,6 @@
                   </f:facet>
                   <p id="notifCount_#{report.elemPrefix}">
                      <h:outputText value="#{report.sentNotificationCount}" />
-                  </p>
-               </h:column>
-
-               <h:column>
-                  <f:facet name="header">
-                     <p>Subscriptions Count</p>
-                  </f:facet>
-                  <p id="subsCount_#{report.elemPrefix}">
-                     <h:outputText value="#{report.subscribtionCount}" />
-                  </p>
-               </h:column>
-
-               <h:column>
-                  <f:facet name="header">
-                     <p>Cancellations Count</p>
-                  </f:facet>
-                  <p id="cancCount_#{report.elemPrefix}">
-                     <h:outputText value="#{report.cancellationCount}" />
                   </p>
                </h:column>
             </h:dataTable>

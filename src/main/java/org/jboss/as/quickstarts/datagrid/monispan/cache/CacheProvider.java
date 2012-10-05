@@ -26,7 +26,7 @@ public final class CacheProvider {
    /**
     * Constant - the number of seconds in milliseconds.
     */
-   public static final long SECOND_IN_MILLIS = 60000;
+   public static final long SECOND_IN_MILLIS = 60 * 1000;
    /**
     * The minutes during which the statistics should be shown.
     */

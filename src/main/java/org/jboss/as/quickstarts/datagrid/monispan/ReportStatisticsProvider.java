@@ -21,6 +21,7 @@ public final class ReportStatisticsProvider {
    public static SimpleDateFormat GENERAL_DATE_FORMATTER = new SimpleDateFormat("yyyy.MM.ddHH:mm:ss");
 
    private static ReportStatisticsProvider instance;
+   private long executionTimeInMillis = 0;
 
    private ReportStatisticsProvider() {
    }
@@ -56,9 +57,7 @@ public final class ReportStatisticsProvider {
       int cacheSize = cacheElems.size();
       if(cacheSize > 0) {
          Report averageReport = new Report("avg", cacheSize > 0 ? totalReport.getUserCount() / cacheSize : 0,
-                                           cacheSize > 0 ? totalReport.getSentNotificationCount() / cacheSize : 0,
-                                           cacheSize > 0 ? totalReport.getSubscribtionCount() / cacheSize : 0,
-                                           cacheSize > 0 ? totalReport.getCancellationCount() / cacheSize : 0, null);
+                                           cacheSize > 0 ? totalReport.getSentNotificationCount() / cacheSize : 0, null);
          averageReport.setReportName("Average Numbers");
          reportList.add(averageReport);
       }
@@ -72,15 +71,12 @@ public final class ReportStatisticsProvider {
     * @return              all entries from the cache as a Map.
     */
    public Map<String, Report> getEntriesFromCache(final boolean isFullReport) {
+      long startTime = System.currentTimeMillis();
+
       Map<String, Report> cacheEntries = new HashMap<String, Report>();
 
       CacheProvider cacheProvider = CacheProvider.getInstance();
-      Date dateKey = null;
-      if(isFullReport) {
-         dateKey = ReportReceiverRestService.getFirstReportDate();
-      } else {
-         dateKey = getFirstAvailableKey(dateKey);
-      }
+      Date dateKey = getFirstAvailableKey(isFullReport);
 
       long notifFrequency = StartupInitListener.getFrequency();
       Date currentDate = new Date();
@@ -100,27 +96,40 @@ public final class ReportStatisticsProvider {
          dateKey = cal.getTime();
       }
 
+      executionTimeInMillis = System.currentTimeMillis() - startTime;
+
       return cacheEntries;
    }
 
-   private Date getFirstAvailableKey(Date firstKey) {
+   /**
+    * Returns the first available key depending on whether the full report should be generated or the short one.
+    *
+    * @param isFullReportNeeded        identifies whether the full report is needed.
+    * @return                          the first available key for retrieving data from cache.
+    */
+   private Date getFirstAvailableKey(final boolean isFullReportNeeded) {
       CacheProvider cacheProvider = CacheProvider.getInstance();
 
-      Calendar now = Calendar.getInstance();
-      now.add(Calendar.MINUTE, -CacheProvider.DATA_SHOW_MINUTES);
-      firstKey = now.getTime();
+      Date firstKey = null;
+      if(isFullReportNeeded) {
+         firstKey = ReportReceiverRestService.getFirstReportDate();
+      } else {
+         Calendar now = Calendar.getInstance();
+         now.add(Calendar.MINUTE, -CacheProvider.DATA_SHOW_MINUTES);
+         firstKey = now.getTime();
 
-      boolean isCorrectKeyFound = false;
-      Date currentDate = new Date();
-      while(!isCorrectKeyFound && firstKey.before(currentDate)) {
-         if(cacheProvider.getCache(CacheProvider.REPORT_CACHE_NAME).get(GENERAL_DATE_FORMATTER.format(firstKey)) != null) {
-            isCorrectKeyFound = true;
-         } else {
-            Calendar c = Calendar.getInstance();
-            c.setTime(firstKey);
-            c.add(Calendar.SECOND, 1);
+         boolean isCorrectKeyFound = false;
+         Date currentDate = new Date();
+         while(!isCorrectKeyFound && firstKey.before(currentDate)) {
+            if(cacheProvider.getCache(CacheProvider.REPORT_CACHE_NAME).get(GENERAL_DATE_FORMATTER.format(firstKey)) != null) {
+               isCorrectKeyFound = true;
+            } else {
+               Calendar c = Calendar.getInstance();
+               c.setTime(firstKey);
+               c.add(Calendar.SECOND, 1);
 
-            firstKey = c.getTime();
+               firstKey = c.getTime();
+            }
          }
       }
 
@@ -137,18 +146,22 @@ public final class ReportStatisticsProvider {
    public Report getTotalReport(List<Report> reportSet) {
       int userCountSum = 0;
       int sentNotifSum = 0;
-      int subscriptionSum = 0;
-      int cancellationSum = 0;
       for(Report rep : reportSet) {
          userCountSum += rep.getUserCount();
          sentNotifSum += rep.getSentNotificationCount();
-         subscriptionSum += rep.getSubscribtionCount();
-         cancellationSum += rep.getCancellationCount();
       }
 
-      Report totalReport = new Report("total", userCountSum, sentNotifSum, subscriptionSum, cancellationSum, null);
+      Report totalReport = new Report("total", userCountSum, sentNotifSum, null);
       totalReport.setReportName("Total Numbers");
 
       return totalReport;
+   }
+
+   /**
+    * Returns the execution time in seconds.
+    * @return           the list retrieval execution time in seconds.
+    */
+   public long getExecutionTimeInMillis() {
+      return executionTimeInMillis;
    }
 }

@@ -12,21 +12,15 @@ public class Report implements Serializable {
    private String elemPrefix;
    private int userCount;
    private int sentNotificationCount;
-   private int subscribtionCount;
-   private int cancellationCount;
-
    private String reportDate;
 
    public Report() {
    }
 
-   public Report(final String elemPrefix, final int userCount, final int sentNotificationCount, final int subscribtionCount,
-                 final int cancellationCount, final String reportDate) {
+   public Report(final String elemPrefix, final int userCount, final int sentNotificationCount, final String reportDate) {
       this.elemPrefix = elemPrefix;
       this.userCount = userCount;
       this.sentNotificationCount = sentNotificationCount;
-      this.subscribtionCount = subscribtionCount;
-      this.cancellationCount = cancellationCount;
       this.reportDate = reportDate;
    }
 
@@ -60,22 +54,6 @@ public class Report implements Serializable {
 
    public void setSentNotificationCount(int sentNotificationCount) {
       this.sentNotificationCount = sentNotificationCount;
-   }
-
-   public int getSubscribtionCount() {
-      return subscribtionCount;
-   }
-
-   public void setSubscribtionCount(int subscribtionCount) {
-      this.subscribtionCount = subscribtionCount;
-   }
-
-   public int getCancellationCount() {
-      return cancellationCount;
-   }
-
-   public void setCancellationCount(int cancellationCount) {
-      this.cancellationCount = cancellationCount;
    }
 
    public String getReportDate() {

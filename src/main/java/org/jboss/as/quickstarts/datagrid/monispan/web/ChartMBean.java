@@ -34,8 +34,6 @@ public class ChartMBean {
 
    private XYDataList series1DataList = new XYDataList();
    private XYDataList series2DataList = new XYDataList();
-   private XYDataList series3DataList = new XYDataList();
-   private XYDataList series4DataList = new XYDataList();
    private static FlotChartRendererData chartData = new FlotChartRendererData();
 
    private static final String CHART_MODE = "Time";
@@ -59,13 +57,9 @@ public class ChartMBean {
          Report entry = cacheData.get(ReportStatisticsProvider.GENERAL_DATE_FORMATTER.format(d));
          series1DataList.addDataPoint(new XYDataPoint(d.getTime(), entry.getUserCount()));
          series2DataList.addDataPoint(new XYDataPoint(d.getTime(), entry.getSentNotificationCount()));
-         series3DataList.addDataPoint(new XYDataPoint(d.getTime(), entry.getSubscribtionCount()));
-         series4DataList.addDataPoint(new XYDataPoint(d.getTime(), entry.getCancellationCount()));
       }
       series1DataList.setLabel("User Count");
       series2DataList.setLabel("Sent Notification Count");
-      series3DataList.setLabel("Subscription Count");
-      series4DataList.setLabel("Cancellation Count");
    }
 
    private Set<Date> getSetOfKeys(Map<String, Report> cacheData) {
@@ -119,8 +113,6 @@ public class ChartMBean {
 
       collection.addDataList(getChartDataList(series1DataList));
       collection.addDataList(getChartDataList(series2DataList));
-      collection.addDataList(getChartDataList(series3DataList));
-      collection.addDataList(getChartDataList(series4DataList));
 
       return collection;
    }
@@ -139,22 +131,6 @@ public class ChartMBean {
 
    public void setSeries2DataList(XYDataList series2DataList) {
       this.series2DataList = series2DataList;
-   }
-
-   public XYDataList getSeries3DataList() {
-      return series3DataList;
-   }
-
-   public void setSeries3DataList(XYDataList series4DataList) {
-      this.series3DataList = series3DataList;
-   }
-
-   public XYDataList getSeries4DataList() {
-      return series4DataList;
-   }
-
-   public void setSeries4DataList(XYDataList series4DataList) {
-      this.series4DataList = series3DataList;
    }
 
    public FlotChartRendererData getChartData() {

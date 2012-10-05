@@ -49,14 +49,12 @@ public class Reporter extends TimerTask {
    private void report() throws Exception {
       Random rand = new Random();
       int sampleUserCount = rand.nextInt(10000);
-      int sentNotificationCount = rand.nextInt(20000);
-      int subscriptionCount = rand.nextInt(5000);
-      int cancellationCount= rand.nextInt(1000);
+      int sentNotificationCount = rand.nextInt(10000);
 
       String dateFormatted = ReportStatisticsProvider.GENERAL_DATE_FORMATTER.format(new Date());
       StringBuffer urlStr = new StringBuffer(webUrl);
       urlStr.append(REPORT_URL).append("/").append(sampleUserCount).append("/").append(sentNotificationCount)
-            .append("/").append(subscriptionCount).append("/").append(cancellationCount).append("/").append(dateFormatted);
+            .append("/").append(dateFormatted);
 
       URL url = new URL(urlStr.toString());
       URLConnection conn = url.openConnection ();

@@ -30,13 +30,12 @@ public class ReportReceiverRestService {
    private static Date firstReportDate = null;
 
    @GET
-   @Path("{userCount}/{notifCount}/{subCount}/{cancels}/{date}")
+   @Path("{userCount}/{notifCount}/{date}")
    @Produces("text/plain")
    public String doGet(@PathParam("userCount") int userCount, @PathParam("notifCount") int sentNotificationCount,
-                                @PathParam("subCount") int subscriptionCount, @PathParam("cancels") int cancellationCount,
                                 @PathParam("date") String date) throws IOException {
 
-      Report report = new Report(null, userCount, sentNotificationCount, subscriptionCount, cancellationCount, date);
+      Report report = new Report(null, userCount, sentNotificationCount, date);
       return processReport(report);
    }
 

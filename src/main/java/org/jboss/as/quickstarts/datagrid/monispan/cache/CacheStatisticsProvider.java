@@ -2,6 +2,8 @@ package org.jboss.as.quickstarts.datagrid.monispan.cache;
 
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.stats.Stats;
+import org.jboss.as.quickstarts.datagrid.monispan.ReportStatisticsProvider;
+import org.jboss.as.quickstarts.datagrid.monispan.rest.ReportReceiverRestService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +32,7 @@ public class CacheStatisticsProvider {
    public Map<String, Long> getCacheStatisticsAsMap() {
       Map<String, Long> stats = new HashMap<String, Long>();
 
+      stats.put("Duration of List Retrieval in Seconds", ReportStatisticsProvider.getInstance().getExecutionTimeInMillis());
       stats.put("Total number of entries in the cache", getTotalNumberOfEntries());
       stats.put("Current number of entries", (long) getCurrentNumberOfEntries());
       stats.put("Number Of Evictions", getEvictions());
