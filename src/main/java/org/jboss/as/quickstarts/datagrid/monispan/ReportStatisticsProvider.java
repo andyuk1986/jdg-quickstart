@@ -45,12 +45,7 @@ public final class ReportStatisticsProvider {
     */
    public List<Report> getReportStatistics(final boolean isFullReport) {
       List<Report> reportList = new ArrayList<Report>();
-      Map<String, Report> cacheElems = null;
-      if(isFullReport) {
-         cacheElems = getAllEntriesFromCache();
-      } else {
-         cacheElems = CacheProvider.getInstance().getCache(CacheProvider.REPORT_CACHE_NAME);
-      }
+      Map<String, Report> cacheElems = getEntriesFromCache(isFullReport);
 
       List<Report> valuesList= new ArrayList<Report>();
       valuesList.addAll(cacheElems.values());
@@ -73,32 +68,63 @@ public final class ReportStatisticsProvider {
 
    /**
     * Returns all (both current and stored in the storage) entries from the cache.
+    * @param  isFullReport specifies whether the full report is needed or no
     * @return              all entries from the cache as a Map.
     */
-   public Map<String, Report> getAllEntriesFromCache() {
+   public Map<String, Report> getEntriesFromCache(final boolean isFullReport) {
       Map<String, Report> cacheEntries = new HashMap<String, Report>();
 
-      Date firstReportDate = ReportReceiverRestService.getFirstReportDate();
-      long notifFrequency = StartupInitListener.getFrequency();
+      CacheProvider cacheProvider = CacheProvider.getInstance();
+      Date dateKey = null;
+      if(isFullReport) {
+         dateKey = ReportReceiverRestService.getFirstReportDate();
+      } else {
+         dateKey = getFirstAvailableKey(dateKey);
+      }
 
+      long notifFrequency = StartupInitListener.getFrequency();
       Date currentDate = new Date();
 
-      while(firstReportDate.before(currentDate)) {
-         String key = GENERAL_DATE_FORMATTER.format(firstReportDate);
-         Report rep = CacheProvider.getInstance().getCache(CacheProvider.REPORT_CACHE_NAME).get(key);
+      while(dateKey.before(currentDate)) {
+         String key = GENERAL_DATE_FORMATTER.format(dateKey);
+         Report rep = cacheProvider.getCache(CacheProvider.REPORT_CACHE_NAME).get(key);
 
          if(rep != null) {
             cacheEntries.put(key, rep);
          }
 
          Calendar cal = Calendar.getInstance();
-         cal.setTime(firstReportDate);
+         cal.setTime(dateKey);
          cal.add(Calendar.MILLISECOND, (int) notifFrequency);
 
-         firstReportDate = cal.getTime();
+         dateKey = cal.getTime();
       }
 
       return cacheEntries;
+   }
+
+   private Date getFirstAvailableKey(Date firstKey) {
+      CacheProvider cacheProvider = CacheProvider.getInstance();
+
+      Calendar now = Calendar.getInstance();
+      now.add(Calendar.MINUTE, -CacheProvider.DATA_SHOW_MINUTES);
+      firstKey = now.getTime();
+
+      boolean isCorrectKeyFound = false;
+      Date currentDate = new Date();
+      while(!isCorrectKeyFound && firstKey.before(currentDate)) {
+         if(cacheProvider.getCache(CacheProvider.REPORT_CACHE_NAME).get(GENERAL_DATE_FORMATTER.format(firstKey)) != null) {
+            isCorrectKeyFound = true;
+         } else {
+            Calendar c = Calendar.getInstance();
+            c.setTime(firstKey);
+            c.add(Calendar.SECOND, 1);
+
+            firstKey = c.getTime();
+         }
+      }
+
+      return firstKey;
    }
 
    /**

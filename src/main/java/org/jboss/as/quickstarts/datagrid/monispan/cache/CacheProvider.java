@@ -30,7 +30,7 @@ public final class CacheProvider {
    /**
     * The minutes during which the statistics should be shown.
     */
-   public static final int DATA_SHOW_MINUTES = 5;
+   public static final int DATA_SHOW_MINUTES = 1;
    /**
     * The name of the reporting cache.
     */

@@ -52,11 +52,7 @@ public class ChartMBean {
       String param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(PARAM_FULL_REPORT);
       Map<String, Report> cacheData = null;
 
-      if(param != null && param.equals("true")) {
-         cacheData = ReportStatisticsProvider.getInstance().getAllEntriesFromCache();
-      } else {
-         cacheData = CacheProvider.getInstance().getCache(CacheProvider.REPORT_CACHE_NAME);
-      }
+      cacheData = ReportStatisticsProvider.getInstance().getEntriesFromCache(param != null && param.equals("true"));
 
       Set<Date> orderedSet = getSetOfKeys(cacheData);
       for(Date d : orderedSet) {

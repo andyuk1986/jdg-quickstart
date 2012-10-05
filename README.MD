@@ -11,15 +11,13 @@ What is it?
 
 Monispan is a simple web application that uses Infinispan Cache instead of a relational database.
 
-The application simulates basic monitoring system which collects and shows statistics for basic website
-Users can list cars, add new cars, or remove them from the CarMart. Information about each car is stored in a cache. The application also shows cache statistics like stores, hits, retrievals, and more.
+The application simulates basic monitoring system which collects and shows basic statistics for website, e.g. users count, sent notifications count, number of subscriptions and cancellations.
+The purpose is to simulate the continuous fresh data flow, so that the old data is evicted and stored in cache store and the fresh data is always on the page.
+The application consists of simulator threads, which simulate the reports from different nodes containing statistical data.
 
-The CarMart quickstart can work in two modes: 
+This data is calculated and stored in the cache.
 
-* _Library mode_  - In this mode, the application and the data grid are running in the same JVM. All libraries (JAR files) are bundled with the application and deployed to JBoss Enterprise Application Platform 6 or JBoss AS 7.  The library usage mode only allows local access to a single node in a distributed cluster. This usage mode gives the application access to data grid functionality within a virtual machine in the container being used. 
-
-* _Client-server mode_ - In this mode, the Cache is stored in  a managed, distributed and clusterable data grid server.  Applications can remotely access the data grid server using Hot Rod, memcached or REST client APIs. This web application bundles only the HotRod client and communicates with a remote JBoss Data Grid (JDG) server. The JDG server is configured via the `standalone.xml` configuration file.
-
+The home page of the application shows the calculated statistical data as well as the cache usage statistics.
 
 System requirements
 -------------------
