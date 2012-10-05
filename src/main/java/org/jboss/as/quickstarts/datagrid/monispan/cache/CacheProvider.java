@@ -6,17 +6,14 @@ import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.global.GlobalConfiguration;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.eviction.EvictionStrategy;
-import org.infinispan.loaders.jdbc.binary.JdbcBinaryCacheStore;
-import org.infinispan.loaders.jdbc.mixed.JdbcMixedCacheStore;
 import org.infinispan.loaders.jdbc.stringbased.JdbcStringBasedCacheStore;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntriesEvicted;
 import org.infinispan.notifications.cachelistener.event.Event;
-import org.jboss.as.quickstarts.datagrid.monispan.jsf.StartupListener;
+import org.jboss.as.quickstarts.datagrid.monispan.jsf.StartupInitListener;
 import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
 
-import java.io.File;
 import java.util.Map;
 import java.util.Set;
 
@@ -77,7 +74,7 @@ public final class CacheProvider {
          cacheManager = new DefaultCacheManager(globalConfiguration);
       }
 
-      long maxEntriesCount = (SECOND_IN_MILLIS / StartupListener.frequency) * DATA_SHOW_MINUTES;
+      long maxEntriesCount = (SECOND_IN_MILLIS / StartupInitListener.getFrequency()) * DATA_SHOW_MINUTES;
 
       Configuration config = new ConfigurationBuilder().jmxStatistics().enable().clustering().cacheMode(CacheMode.LOCAL)
             .eviction().maxEntries((int) maxEntriesCount).strategy(EvictionStrategy.LRU)

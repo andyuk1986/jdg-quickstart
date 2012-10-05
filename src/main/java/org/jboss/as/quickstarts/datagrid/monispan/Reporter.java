@@ -18,14 +18,19 @@ import java.util.logging.Logger;
  * @author Anna Manukyan
  */
 public class Reporter extends TimerTask {
-   public static final String REPORT_URL = "http://localhost:8180/jboss-as-monispan/rest/report";
+   /**
+    * URL of the page to which report should be sent.
+    */
+   public static final String REPORT_URL = "/rest/report";
 
    private Logger log = Logger.getLogger(this.getClass().getName());
 
    private String name;
+   private String webUrl;
 
-   public Reporter(String name) {
+   public Reporter(String name, String webUrl) {
       this.name = name;
+      this.webUrl = webUrl;
    }
 
    /**
@@ -49,7 +54,7 @@ public class Reporter extends TimerTask {
       int cancellationCount= rand.nextInt(1000);
 
       String dateFormatted = ReportStatisticsProvider.GENERAL_DATE_FORMATTER.format(new Date());
-      StringBuffer urlStr = new StringBuffer();
+      StringBuffer urlStr = new StringBuffer(webUrl);
       urlStr.append(REPORT_URL).append("/").append(sampleUserCount).append("/").append(sentNotificationCount)
             .append("/").append(subscriptionCount).append("/").append(cancellationCount).append("/").append(dateFormatted);
 

@@ -1,11 +1,10 @@
 package org.jboss.as.quickstarts.datagrid.monispan;
 
 import org.jboss.as.quickstarts.datagrid.monispan.cache.CacheProvider;
-import org.jboss.as.quickstarts.datagrid.monispan.jsf.StartupListener;
+import org.jboss.as.quickstarts.datagrid.monispan.jsf.StartupInitListener;
 import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
 import org.jboss.as.quickstarts.datagrid.monispan.rest.ReportReceiverRestService;
 
-import javax.faces.context.FacesContext;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -80,7 +79,7 @@ public final class ReportStatisticsProvider {
       Map<String, Report> cacheEntries = new HashMap<String, Report>();
 
       Date firstReportDate = ReportReceiverRestService.getFirstReportDate();
-      long notifFrequency = StartupListener.frequency;
+      long notifFrequency = StartupInitListener.getFrequency();
 
       Date currentDate = new Date();
 

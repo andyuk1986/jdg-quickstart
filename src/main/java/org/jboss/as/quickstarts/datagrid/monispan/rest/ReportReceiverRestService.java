@@ -2,7 +2,7 @@ package org.jboss.as.quickstarts.datagrid.monispan.rest;
 
 import org.jboss.as.quickstarts.datagrid.monispan.ReportStatisticsProvider;
 import org.jboss.as.quickstarts.datagrid.monispan.cache.CacheProvider;
-import org.jboss.as.quickstarts.datagrid.monispan.jsf.StartupListener;
+import org.jboss.as.quickstarts.datagrid.monispan.jsf.StartupInitListener;
 import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
 
 import javax.ws.rs.GET;
@@ -58,7 +58,7 @@ public class ReportReceiverRestService {
          }
 
          reportSet.add(report);
-         if(reportSet.size() == StartupListener.threadNum) {
+         if(reportSet.size() == StartupInitListener.getThreadNum()) {
             Report finalReport = ReportStatisticsProvider.getInstance().getTotalReport(reportSet);
             provider.put(CacheProvider.REPORT_CACHE_NAME, key, finalReport);
 

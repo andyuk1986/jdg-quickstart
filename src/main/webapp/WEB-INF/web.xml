@@ -4,7 +4,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
-    <display-name>monispan</display-name>
+    <display-name>jboss-as-monispan</display-name>
 
     <servlet>
         <servlet-name>H2Console</servlet-name>
@@ -19,6 +19,10 @@
         <servlet-name>H2Console</servlet-name>
         <url-pattern>/h2/*</url-pattern>
     </servlet-mapping>
+
+    <listener>
+        <listener-class>org.jboss.as.quickstarts.datagrid.monispan.jsf.StartupInitListener</listener-class>
+    </listener>
 
     <!--&lt;!&ndash; this need same with resteasy servlet url-pattern &ndash;&gt;
     <context-param>

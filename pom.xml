@@ -40,7 +40,7 @@ language governing permissions and limitations under the License. -->
 
         <version.org.jboss.resteasy>2.2.2.GA </version.org.jboss.resteasy>
 
-        <org.richfaces.bom.version>4.1.0.Final</org.richfaces.bom.version>
+        <org.richfaces.bom.version>4.2.0.Final</org.richfaces.bom.version>
 
         <!-- JBoss dependency versions -->
         <jboss.as.plugin.version>7.1.1.Final</jboss.as.plugin.version>

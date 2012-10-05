@@ -8,6 +8,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.SystemEvent;
 import javax.faces.event.SystemEventListener;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Properties;
@@ -20,7 +22,7 @@ import java.util.logging.Logger;
  *
  * @author Anna Manukyan
  */
-public class StartupListener implements SystemEventListener {
+public class StartupInitListener implements ServletContextListener {
    /**
     * The name of the property from edg.properties file. Corresponds to the number of simulator nodes.
     */
@@ -30,6 +32,26 @@ public class StartupListener implements SystemEventListener {
     * The name of the property from edg.properties file. Corresponds to the frequency of simulator jobs work.
     */
    public static final String EXECUTION_FREQUENCY = "execFreq";
+
+   /**
+    * The name of the property from edg.properties file. Corresponds to the server host to use in simulator thread.
+    */
+   public static final String SERVER_HOST= "serverHost";
+
+   /**
+    * The name of the property from edg.properties file. Corresponds to the application server port.
+    */
+   public static final String SERVER_PORT= "serverPort";
+
+   /**
+    * The default value for server host, if is not provided.
+    */
+   public static final String DEFAULT_SERVER_HOST= "localhost";
+
+   /**
+    * Thedefault value for server port, if is not provided.
+    */
+   public static final int DEFAULT_SERVER_PORT= 8080;
 
    /**
     * Default number of simulator nodes, in case the property is not provided.
@@ -46,21 +68,18 @@ public class StartupListener implements SystemEventListener {
     */
    public static final String PROPERTY_FILE_NAME = "edg.properties";
 
-   //@TODO change
-   public static long frequency;
-
-   public static long threadNum;
+   private static long frequency;
+   private static long threadNum;
 
    private Logger log = Logger.getLogger(this.getClass().getName());
 
    /**
     * Loads the property file, and starts the Cache and simulator nodes based on the retrieved data.
-    * @param systemEvent
-    * @throws AbortProcessingException
+    * @param servletContextEvent
     */
    @Override
-   public void processEvent(SystemEvent systemEvent) throws AbortProcessingException {
-      System.out.println("Context is initialized.");
+   public void contextInitialized(ServletContextEvent servletContextEvent) {
+      log.info("Context is initialized.");
 
       Properties prop = new Properties();
       try {
@@ -72,6 +91,12 @@ public class StartupListener implements SystemEventListener {
       threadNum = Integer.parseInt(prop.getProperty(NODE_NUMBER, DEFAULT_NODE_NUMBER));
       frequency = Integer.parseInt(prop.getProperty(EXECUTION_FREQUENCY, DEFAULT_EXECUTION_FREQUENCY));
 
+      String serverHost = prop.getProperty(SERVER_HOST, DEFAULT_SERVER_HOST);
+      int serverPort = Integer.parseInt(prop.getProperty(SERVER_PORT, ""  + DEFAULT_SERVER_PORT));
+      String contextUrl = servletContextEvent.getServletContext().getContextPath();
+
+      StringBuffer applicationUrl = new StringBuffer("http://").append(serverHost).append(":").append(serverPort).append(contextUrl);
+
       log.info("The node number is: " + threadNum);
       log.info("The frequency is: " + frequency);
 
@@ -80,7 +105,7 @@ public class StartupListener implements SystemEventListener {
 
       for(int i = 1; i <= threadNum; i++) {
          String nodeName = "node" + i;
-         Reporter r = new Reporter(nodeName);
+         Reporter r = new Reporter(nodeName, applicationUrl.toString());
          Timer t = new Timer();
 
          Calendar cal = Calendar.getInstance();
@@ -91,8 +116,24 @@ public class StartupListener implements SystemEventListener {
       }
    }
 
+   /**
+    * Getter for frequency property. Shows the frequency with which the simulator jobs should work.
+    * @return              the frequency falue from properties file.
+    */
+   public static long getFrequency() {
+      return frequency;
+   }
+
+   /**
+    * Returns the number of simulator threads to be run.
+    * @return              the number of threads to run.
+    */
+   public static long getThreadNum() {
+      return threadNum;
+   }
+
    @Override
-   public boolean isListenerForSource(Object source) {
-      return source instanceof Application;
+   public void contextDestroyed(ServletContextEvent servletContextEvent) {
+      log.info("Context Destroyed!!!!!");
    }
 }
