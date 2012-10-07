@@ -38,8 +38,10 @@ language governing permissions and limitations under the License. -->
         <!-- Infinispan version for cache store jdbc library. -->
         <version.org.infinispan>5.1.2.FINAL</version.org.infinispan>
 
+        <!-- RestEasy version for performing rest calls by simulating reporter nodes. -->
         <version.org.jboss.resteasy>2.2.2.GA </version.org.jboss.resteasy>
 
+        <!-- Richfaces version for view. -->
         <org.richfaces.bom.version>4.2.0.Final</org.richfaces.bom.version>
 
         <!-- JBoss dependency versions -->
@@ -51,9 +53,9 @@ language governing permissions and limitations under the License. -->
 
         <!-- other plugin versions -->
         <compiler.plugin.version>2.3.2</compiler.plugin.version>
-        <buildhelper.plugin.version>1.7</buildhelper.plugin.version>
         <war.plugin.version>2.2</war.plugin.version>
 
+        <!-- JBoss port for deploying application. -->
         <jboss.listener.port>9999</jboss.listener.port>
 
         <!-- maven-compiler-plugin -->
@@ -77,6 +79,7 @@ language governing permissions and limitations under the License. -->
                 <scope>import</scope>
             </dependency>
 
+            <!-- Richfaces bom file version to use. -->
             <dependency>
                 <groupId>org.richfaces</groupId>
                 <artifactId>richfaces-bom</artifactId>
@@ -126,16 +129,19 @@ language governing permissions and limitations under the License. -->
             <scope>provided</scope>
         </dependency>
 
+        <!-- Richfaces ui component library. -->
         <dependency>
             <groupId>org.richfaces.ui</groupId>
             <artifactId>richfaces-components-ui</artifactId>
         </dependency>
 
+        <!-- Richfaces core component. -->
         <dependency>
             <groupId>org.richfaces.core</groupId>
             <artifactId>richfaces-core-impl</artifactId>
         </dependency>
 
+        <!-- Java EE6 library. -->
         <dependency>
             <groupId>org.jboss.spec</groupId>
             <artifactId>jboss-javaee-web-6.0</artifactId>
@@ -150,6 +156,7 @@ language governing permissions and limitations under the License. -->
             </exclusions>
         </dependency>
 
+        <!-- JaxRS necessary for using RestEasy. -->
         <dependency>
             <groupId>org.jboss.spec.javax.ws.rs</groupId>
             <artifactId>jboss-jaxrs-api_1.1_spec</artifactId>
@@ -158,6 +165,7 @@ language governing permissions and limitations under the License. -->
             <scope>provided</scope>
         </dependency>
 
+        <!-- Rest Easy library necessary for performing Rest Calls. -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
@@ -165,6 +173,7 @@ language governing permissions and limitations under the License. -->
             <scope>provided</scope>
         </dependency>
 
+        <!-- Rest Easy Library necessary for performing Rest calls. -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-multipart-provider</artifactId>
@@ -177,6 +186,7 @@ language governing permissions and limitations under the License. -->
             </exclusions>
         </dependency>
 
+        <!-- JSFlot library which is located in ./lib directory and is used for showing charts / graphs. -->
         <dependency>
             <groupId>org.jsflot</groupId>
             <artifactId>jsflot</artifactId>
