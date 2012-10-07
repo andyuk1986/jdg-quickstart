@@ -54,6 +54,8 @@ language governing permissions and limitations under the License. -->
         <buildhelper.plugin.version>1.7</buildhelper.plugin.version>
         <war.plugin.version>2.2</war.plugin.version>
 
+        <jboss.listener.port>9999</jboss.listener.port>
+
         <!-- maven-compiler-plugin -->
         <maven.compiler.target>1.6</maven.compiler.target>
         <maven.compiler.source>1.6</maven.compiler.source>
@@ -218,7 +220,7 @@ language governing permissions and limitations under the License. -->
                     </execution>
                 </executions>
                 <configuration>
-                    <port>10099</port>
+                    <port>${jboss.listener.port}</port>
                 </configuration>
             </plugin>
             <!-- Compiler plugin enforces Java 1.6 compatibility and activates
