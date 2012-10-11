@@ -3,11 +3,7 @@ package org.jboss.as.quickstarts.datagrid.monispan.jsf;
 import org.jboss.as.quickstarts.datagrid.monispan.Reporter;
 import org.jboss.as.quickstarts.datagrid.monispan.cache.CacheProvider;
 
-import javax.faces.application.Application;
-import javax.faces.context.FacesContext;
-import javax.faces.event.AbortProcessingException;
-import javax.faces.event.SystemEvent;
-import javax.faces.event.SystemEventListener;
+import javax.inject.Inject;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.IOException;
@@ -24,22 +20,22 @@ import java.util.logging.Logger;
  */
 public class StartupInitListener implements ServletContextListener {
    /**
-    * The name of the property from edg.properties file. Corresponds to the number of simulator nodes.
+    * The name of the property from jdg.properties file. Corresponds to the number of simulator nodes.
     */
    public static final String NODE_NUMBER = "simulatorNodeNum";
 
    /**
-    * The name of the property from edg.properties file. Corresponds to the frequency of simulator jobs work.
+    * The name of the property from jdg.properties file. Corresponds to the frequency of simulator jobs work.
     */
    public static final String EXECUTION_FREQUENCY = "execFreq";
 
    /**
-    * The name of the property from edg.properties file. Corresponds to the server host to use in simulator thread.
+    * The name of the property from jdg.properties file. Corresponds to the server host to use in simulator thread.
     */
    public static final String SERVER_HOST= "serverHost";
 
    /**
-    * The name of the property from edg.properties file. Corresponds to the application server port.
+    * The name of the property from jdg.properties file. Corresponds to the application server port.
     */
    public static final String SERVER_PORT= "serverPort";
 
@@ -66,12 +62,15 @@ public class StartupInitListener implements ServletContextListener {
    /**
     * The name of the properties file.
     */
-   public static final String PROPERTY_FILE_NAME = "edg.properties";
+   public static final String PROPERTY_FILE_NAME = "jdg.properties";
 
    private static long frequency;
    private static long threadNum;
 
    private Logger log = Logger.getLogger(this.getClass().getName());
+
+   @Inject
+   private CacheProvider cacheProvider;
 
    /**
     * Loads the property file, and starts the Cache and simulator nodes based on the retrieved data.
@@ -101,7 +100,7 @@ public class StartupInitListener implements ServletContextListener {
       log.info("The frequency is: " + frequency);
 
       log.info("Starting Cache ...");
-      CacheProvider.getInstance().startCache();
+      cacheProvider.startCache();
 
       for(int i = 1; i <= threadNum; i++) {
          String nodeName = "node" + i;

@@ -14,6 +14,9 @@ import org.infinispan.notifications.cachelistener.event.Event;
 import org.jboss.as.quickstarts.datagrid.monispan.jsf.StartupInitListener;
 import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
 
+import javax.ejb.Startup;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Named;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,7 +25,8 @@ import java.util.Set;
  *
  * @author Anna Manukyan
  */
-public final class CacheProvider {
+@ApplicationScoped
+public class CacheProvider {
    /**
     * Constant - the number of seconds in milliseconds.
     */
@@ -40,24 +44,8 @@ public final class CacheProvider {
     */
    private static final String MAX_THREADS_PROP_NAME = "maxThreads";
 
-   private static CacheProvider instance;
    private DefaultCacheManager cacheManager;
    private AsyncNotifListener notifListener;
-
-   private CacheProvider() {
-   }
-
-   /**
-    * Returns the single instance of this class.
-    * @return           the single instance of this class.
-    */
-   public static CacheProvider getInstance() {
-      if(instance == null) {
-         instance = new CacheProvider();
-      }
-
-      return instance;
-   }
 
    /**
     * Configures and starts cache with the provided name. The cache is configured in the following way:

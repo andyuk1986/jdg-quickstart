@@ -11,6 +11,7 @@ import org.jsflot.xydata.XYDataSetCollection;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.text.ParseException;
 import java.util.Date;
@@ -39,6 +40,9 @@ public class ChartMBean {
    private static final String CHART_MODE = "Time";
    private static final String CHART_WIDTH_IN_PIXELS = "625";
 
+   @Inject
+   private ReportStatisticsProvider reportStatisticsProvider;
+
    /**
     * Constructor, which is called when JSFlot component is initialized. Gets the data from the cache, full or partial
     * dependent on the parameter from request and fills the corresponding collections for further processing.
@@ -50,7 +54,7 @@ public class ChartMBean {
       String param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(PARAM_FULL_REPORT);
       Map<String, Report> cacheData = null;
 
-      cacheData = ReportStatisticsProvider.getInstance().getEntriesFromCache(param != null && param.equals("true"));
+      cacheData = reportStatisticsProvider.getEntriesFromCache(param != null && param.equals("true"));
 
       Set<Date> orderedSet = getSetOfKeys(cacheData);
       for(Date d : orderedSet) {

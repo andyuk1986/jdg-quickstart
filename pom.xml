@@ -56,7 +56,7 @@ language governing permissions and limitations under the License. -->
         <war.plugin.version>2.2</war.plugin.version>
 
         <!-- JBoss port for deploying application. -->
-        <jboss.listener.port>9999</jboss.listener.port>
+        <jboss.listener.port>10099</jboss.listener.port>
 
         <!-- maven-compiler-plugin -->
         <maven.compiler.target>1.6</maven.compiler.target>
@@ -209,12 +209,34 @@ language governing permissions and limitations under the License. -->
                     <!-- Java EE 6 doesn't require web.xml, Maven needs to catch
                    up! -->
                     <failOnMissingWebXml>false</failOnMissingWebXml>
-                    <archive>
-                        <manifestEntries>
-                            <Dependencies>com.h2database.h2</Dependencies>
-                        </manifestEntries>
-                    </archive>
+
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.4.3</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/${project.build.finalName}/META-INF/</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <excludes>
+                                        <exclude>jdg.properties</exclude>
+                                    </excludes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <!-- JBoss AS plugin to deploy war -->
             <plugin>

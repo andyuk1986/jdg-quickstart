@@ -5,6 +5,9 @@ import org.jboss.as.quickstarts.datagrid.monispan.cache.CacheProvider;
 import org.jboss.as.quickstarts.datagrid.monispan.jsf.StartupInitListener;
 import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
 
+import javax.annotation.ManagedBean;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -23,11 +26,18 @@ import java.util.Map;
  * @author Anna Manukyan
  */
 @Path("/report")
+@ManagedBean
 public class ReportReceiverRestService {
    private static Map<String, List<Report>> groupMap = new HashMap<String, List<Report>>();
 
    public static final String OK_RESPONSE = "ok";
    private static Date firstReportDate = null;
+
+   @Inject
+   private CacheProvider cacheProvider;
+
+   @Inject
+   private ReportStatisticsProvider reportStatisticsProvider;
 
    @GET
    @Path("{userCount}/{notifCount}/{date}")
@@ -45,7 +55,6 @@ public class ReportReceiverRestService {
     * @return                    OK response.
    */
    private String processReport(Report report) {
-      CacheProvider provider = CacheProvider.getInstance();
       String key = report.getReportDate();
 
       setFirstReportDate(report);
@@ -58,10 +67,11 @@ public class ReportReceiverRestService {
 
          reportSet.add(report);
          if(reportSet.size() == StartupInitListener.getThreadNum()) {
-            Report finalReport = ReportStatisticsProvider.getInstance().getTotalReport(reportSet);
-            provider.put(CacheProvider.REPORT_CACHE_NAME, key, finalReport);
+            System.out.println(cacheProvider.getCache(CacheProvider.REPORT_CACHE_NAME));
+            /*Report finalReport = reportStatisticsProvider.getTotalReport(reportSet);
+            cacheProvider.put(CacheProvider.REPORT_CACHE_NAME, key, finalReport);
 
-            groupMap.remove(key);
+            groupMap.remove(key);*/
          }
       }
 

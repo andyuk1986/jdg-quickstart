@@ -3,6 +3,7 @@ package org.jboss.as.quickstarts.datagrid.monispan.rest;
 import org.jboss.as.quickstarts.datagrid.monispan.ReportStatisticsProvider;
 import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
 
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -17,6 +18,9 @@ import java.util.List;
 @Path("/freshrep")
 public class ReportStatsAjaxRestService {
 
+   @Inject
+   private ReportStatisticsProvider reportStatisticsProvider;
+
    /**
     * Supports GET request, which gets parameter, true or false which means - full or partial report.
     * @param isFullReport           identifies whether full or partial report is needed.
@@ -26,6 +30,6 @@ public class ReportStatsAjaxRestService {
    @Produces("application/json")
    @Path("{full}")
    public List<Report> updateReportStats(@PathParam("full") boolean isFullReport) {
-      return ReportStatisticsProvider.getInstance().getReportStatistics(isFullReport);
+      return reportStatisticsProvider.getReportStatistics(isFullReport);
    }
 }

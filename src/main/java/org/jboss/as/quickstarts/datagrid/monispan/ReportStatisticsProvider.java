@@ -5,6 +5,10 @@ import org.jboss.as.quickstarts.datagrid.monispan.jsf.StartupInitListener;
 import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
 import org.jboss.as.quickstarts.datagrid.monispan.rest.ReportReceiverRestService;
 
+import javax.ejb.Startup;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -13,29 +17,23 @@ import java.util.*;
  *
  * @author Anna Manukyan
  */
-public final class ReportStatisticsProvider {
+@Named
+@ApplicationScoped
+@Startup
+public class ReportStatisticsProvider {
+
+   @Inject
+   private CacheProvider cacheProvider;
+
+   public ReportStatisticsProvider(){
+      System.out.println("---------------------------------------------------- Initializing ------------------------------------------------------ ");
+   }
 
    /**
     * The format to which the date is corresponds in the project.
     */
    public static SimpleDateFormat GENERAL_DATE_FORMATTER = new SimpleDateFormat("yyyy.MM.ddHH:mm:ss");
-
-   private static ReportStatisticsProvider instance;
    private long executionTimeInMillis = 0;
-
-   private ReportStatisticsProvider() {
-   }
-
-   /**
-    * Returns the single instance of this class.
-    * @return           the single instance of this class.
-    */
-   public static ReportStatisticsProvider getInstance() {
-      if(instance == null) {
-         instance = new ReportStatisticsProvider();
-      }
-      return instance;
-   }
 
    /**
     * Returns the "user statistics" - Total and average reports based on got data. Depending on the parameter, the report
@@ -75,7 +73,6 @@ public final class ReportStatisticsProvider {
 
       Map<String, Report> cacheEntries = new HashMap<String, Report>();
 
-      CacheProvider cacheProvider = CacheProvider.getInstance();
       Date dateKey = getFirstAvailableKey(isFullReport);
 
       long notifFrequency = StartupInitListener.getFrequency();
@@ -98,6 +95,11 @@ public final class ReportStatisticsProvider {
 
       executionTimeInMillis = System.currentTimeMillis() - startTime;
 
+      Map<String,Report> elementsInCache = cacheProvider.getCache(CacheProvider.REPORT_CACHE_NAME);
+      for(String elem : elementsInCache.keySet()) {
+         System.out.println(elem);
+      }
+
       return cacheEntries;
    }
 
@@ -108,8 +110,6 @@ public final class ReportStatisticsProvider {
     * @return                          the first available key for retrieving data from cache.
     */
    private Date getFirstAvailableKey(final boolean isFullReportNeeded) {
-      CacheProvider cacheProvider = CacheProvider.getInstance();
-
       Date firstKey = null;
       if(isFullReportNeeded) {
          firstKey = ReportReceiverRestService.getFirstReportDate();

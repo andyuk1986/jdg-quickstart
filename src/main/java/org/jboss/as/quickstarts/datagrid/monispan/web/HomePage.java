@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,11 +28,19 @@ public class HomePage {
 
    private static final String PARAM_FULL_REPORT = "full";
 
+   @Inject
+   private ReportStatisticsProvider reportStatisticsProvider;
+
+   @Inject
+   private CacheStatisticsProvider statistics;
+
    @Produces @RequestScoped
    @Named("statisticsChart")
    public List<Report> generateStatisticsChart() throws IOException {
       String param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(PARAM_FULL_REPORT);
-      return ReportStatisticsProvider.getInstance().getReportStatistics(param != null && param.equals("true"));
+
+      System.out.println("REPORT STATISTICS: " + reportStatisticsProvider);
+      return reportStatisticsProvider.getReportStatistics(param != null && param.equals("true"));
    }
 
    /**
@@ -39,7 +48,7 @@ public class HomePage {
     * @return        the list which contains entryset of infinispan statistics.
     */
    public List<Map.Entry<String, Long>> generateInfinispanStatistics() {
-      CacheStatisticsProvider statistics = new CacheStatisticsProvider();
+      //CacheStatisticsProvider statistics = new CacheStatisticsProvider();
       Map<String, Long> stats = statistics.getCacheStatisticsAsMap();
 
       return new ArrayList<Map.Entry<String, Long>>(stats.entrySet());

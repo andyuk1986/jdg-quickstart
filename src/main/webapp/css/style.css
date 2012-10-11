@@ -162,7 +162,7 @@ p {
    padding: 3px 5px;
 }
 
-.menu li a:hover, .menu li a.active {
+.menu li a:hover, .menu li a.inactive {
    color: #cb282b;
    text-decoration: underline;
 }
@@ -232,7 +232,7 @@ p {
    color: #666666;
 }
 
-#portfolio .categories li a:hover, #portfolio .categories li a.active {
+#portfolio .categories li a:hover, #portfolio .categories li a.inactive {
    color: #ef0007;
    text-decoration: underline;
 }
