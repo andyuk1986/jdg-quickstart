@@ -31,15 +31,12 @@ public class HomePage {
    @Inject
    private ReportStatisticsProvider reportStatisticsProvider;
 
-   @Inject
-   private CacheStatisticsProvider statistics;
-
    @Produces @RequestScoped
    @Named("statisticsChart")
    public List<Report> generateStatisticsChart() throws IOException {
       String param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(PARAM_FULL_REPORT);
 
-      System.out.println("REPORT STATISTICS: " + reportStatisticsProvider);
+      //ReportStatisticsProvider reportStatisticsProvider = new ReportStatisticsProvider();
       return reportStatisticsProvider.getReportStatistics(param != null && param.equals("true"));
    }
 
@@ -48,7 +45,7 @@ public class HomePage {
     * @return        the list which contains entryset of infinispan statistics.
     */
    public List<Map.Entry<String, Long>> generateInfinispanStatistics() {
-      //CacheStatisticsProvider statistics = new CacheStatisticsProvider();
+      CacheStatisticsProvider statistics = new CacheStatisticsProvider();
       Map<String, Long> stats = statistics.getCacheStatisticsAsMap();
 
       return new ArrayList<Map.Entry<String, Long>>(stats.entrySet());

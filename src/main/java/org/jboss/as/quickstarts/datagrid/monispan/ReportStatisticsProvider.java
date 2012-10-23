@@ -5,29 +5,26 @@ import org.jboss.as.quickstarts.datagrid.monispan.jsf.StartupInitListener;
 import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
 import org.jboss.as.quickstarts.datagrid.monispan.rest.ReportReceiverRestService;
 
-import javax.ejb.Startup;
-import javax.enterprise.context.ApplicationScoped;
+import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class which provides custom statistics from the different node executors.
  *
  * @author Anna Manukyan
  */
-@Named
-@ApplicationScoped
-@Startup
+@ManagedBean
 public class ReportStatisticsProvider {
 
    @Inject
    private CacheProvider cacheProvider;
-
-   public ReportStatisticsProvider(){
-      System.out.println("---------------------------------------------------- Initializing ------------------------------------------------------ ");
-   }
 
    /**
     * The format to which the date is corresponds in the project.

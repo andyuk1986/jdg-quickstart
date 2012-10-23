@@ -3,11 +3,8 @@ package org.jboss.as.quickstarts.datagrid.monispan.cache;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.stats.Stats;
 import org.jboss.as.quickstarts.datagrid.monispan.ReportStatisticsProvider;
-import org.jboss.as.quickstarts.datagrid.monispan.rest.ReportReceiverRestService;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,16 +13,12 @@ import java.util.Map;
  *
  * @author Anna Manukyan
  */
-@ApplicationScoped
 public class CacheStatisticsProvider {
 
    private Stats statistics;
 
    @Inject
    private CacheProvider cacheProvider;
-
-   @Inject
-   private ReportStatisticsProvider reportStatisticsProvider;
 
    /**
     * Constructor, gets the DefaultCacheManager object and retrieves the statistics from it.
@@ -42,6 +35,7 @@ public class CacheStatisticsProvider {
    public Map<String, Long> getCacheStatisticsAsMap() {
       Map<String, Long> stats = new HashMap<String, Long>();
 
+      ReportStatisticsProvider reportStatisticsProvider = new ReportStatisticsProvider();
       stats.put("Duration of Data Retrieval in MilliSeconds", reportStatisticsProvider.getExecutionTimeInMillis());
       stats.put("Total number of entries in the cache", getTotalNumberOfEntries());
       stats.put("Current number of entries", (long) getCurrentNumberOfEntries());

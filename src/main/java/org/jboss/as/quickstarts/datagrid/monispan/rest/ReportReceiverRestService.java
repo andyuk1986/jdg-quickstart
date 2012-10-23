@@ -6,7 +6,7 @@ import org.jboss.as.quickstarts.datagrid.monispan.jsf.StartupInitListener;
 import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
 
 import javax.annotation.ManagedBean;
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -35,9 +35,6 @@ public class ReportReceiverRestService {
 
    @Inject
    private CacheProvider cacheProvider;
-
-   @Inject
-   private ReportStatisticsProvider reportStatisticsProvider;
 
    @GET
    @Path("{userCount}/{notifCount}/{date}")
@@ -68,6 +65,8 @@ public class ReportReceiverRestService {
          reportSet.add(report);
          if(reportSet.size() == StartupInitListener.getThreadNum()) {
             System.out.println(cacheProvider.getCache(CacheProvider.REPORT_CACHE_NAME));
+
+            ReportStatisticsProvider reportStatisticsProvider = new ReportStatisticsProvider();
             /*Report finalReport = reportStatisticsProvider.getTotalReport(reportSet);
             cacheProvider.put(CacheProvider.REPORT_CACHE_NAME, key, finalReport);
 

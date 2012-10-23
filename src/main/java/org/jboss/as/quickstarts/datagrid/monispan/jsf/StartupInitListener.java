@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Properties;
 import java.util.Timer;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 /**
@@ -65,7 +68,7 @@ public class StartupInitListener implements ServletContextListener {
    public static final String PROPERTY_FILE_NAME = "jdg.properties";
 
    private static long frequency;
-   private static long threadNum;
+   private static int threadNum;
 
    private Logger log = Logger.getLogger(this.getClass().getName());
 
@@ -102,16 +105,12 @@ public class StartupInitListener implements ServletContextListener {
       log.info("Starting Cache ...");
       cacheProvider.startCache();
 
+      ScheduledExecutorService s = Executors.newScheduledThreadPool(threadNum);
       for(int i = 1; i <= threadNum; i++) {
          String nodeName = "node" + i;
          Reporter r = new Reporter(nodeName, applicationUrl.toString());
-         Timer t = new Timer();
 
-         Calendar cal = Calendar.getInstance();
-         cal.add(Calendar.SECOND, 5);
-
-         t.schedule(r, cal.getTime(), frequency);
-         log.info("Thread is initialized. Will start work on: " + cal.getTime());
+         s.scheduleWithFixedDelay(r, 5000, frequency, TimeUnit.MILLISECONDS);
       }
    }
 

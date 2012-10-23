@@ -18,9 +18,6 @@ import java.util.List;
 @Path("/freshrep")
 public class ReportStatsAjaxRestService {
 
-   @Inject
-   private ReportStatisticsProvider reportStatisticsProvider;
-
    /**
     * Supports GET request, which gets parameter, true or false which means - full or partial report.
     * @param isFullReport           identifies whether full or partial report is needed.
@@ -30,6 +27,8 @@ public class ReportStatsAjaxRestService {
    @Produces("application/json")
    @Path("{full}")
    public List<Report> updateReportStats(@PathParam("full") boolean isFullReport) {
+      ReportStatisticsProvider reportStatisticsProvider = new ReportStatisticsProvider();
+
       return reportStatisticsProvider.getReportStatistics(isFullReport);
    }
 }

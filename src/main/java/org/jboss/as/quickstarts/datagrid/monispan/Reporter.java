@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  *
  * @author Anna Manukyan
  */
-public class Reporter extends TimerTask {
+public class Reporter implements Runnable {
    /**
     * URL of the page to which report should be sent.
     */
