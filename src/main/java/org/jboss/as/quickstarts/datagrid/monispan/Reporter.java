@@ -48,8 +48,8 @@ public class Reporter implements Runnable {
 
    private void report() throws Exception {
       Random rand = new Random();
-      int sampleUserCount = rand.nextInt(10000);
-      int sentNotificationCount = rand.nextInt(10000);
+      int sampleUserCount = rand.nextInt(500);
+      int sentNotificationCount = rand.nextInt(500);
 
       String dateFormatted = ReportStatisticsProvider.GENERAL_DATE_FORMATTER.format(new Date());
       StringBuffer urlStr = new StringBuffer(webUrl);

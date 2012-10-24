@@ -37,9 +37,7 @@ public class HomePage {
    @Produces @RequestScoped
    @Named("statisticsChart")
    public List<Report> generateStatisticsChart() throws IOException {
-      String param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(PARAM_FULL_REPORT);
-
-      return reportStatisticsProvider.getReportStatistics(param != null && param.equals("true"));
+      return reportStatisticsProvider.getReportStatistics(isFullReportNeeded());
    }
 
    /**
@@ -50,5 +48,35 @@ public class HomePage {
       Map<String, Long> stats = statistics.getCacheStatisticsAsMap();
 
       return new ArrayList<Map.Entry<String, Long>>(stats.entrySet());
+   }
+
+   public boolean isFullReportNeeded() {
+      String param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(PARAM_FULL_REPORT);
+
+      return (param != null && param.equals("true"));
+   }
+
+   public String getPageTitle() {
+      String pageTitle = "";
+
+      if(isFullReportNeeded()) {
+         pageTitle = "Full Data";
+      } else {
+         pageTitle = "Data For The Last Minute";
+      }
+
+      return pageTitle;
+   }
+
+   public String getPageDescription() {
+      String description = "";
+
+      if(isFullReportNeeded()) {
+         description = "the full data report";
+      } else {
+         description = "the report for the last minute";
+      }
+
+      return description;
    }
 }

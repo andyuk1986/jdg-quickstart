@@ -81,7 +81,7 @@ public class ReportReceiverRestService {
     * Stores the date when the first report has been sent.
     * @param report        the report from which the date should be picked.
     */
-   public synchronized void setFirstReportDate(Report report) {
+   public static synchronized void setFirstReportDate(Report report) {
       if(firstReportDate == null) {
          try {
             firstReportDate = ReportStatisticsProvider.GENERAL_DATE_FORMATTER.parse(report.getReportDate());
