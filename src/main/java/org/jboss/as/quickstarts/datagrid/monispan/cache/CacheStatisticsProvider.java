@@ -4,6 +4,8 @@ import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.stats.Stats;
 import org.jboss.as.quickstarts.datagrid.monispan.ReportStatisticsProvider;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,17 +15,22 @@ import java.util.Map;
  *
  * @author Anna Manukyan
  */
+@RequestScoped
 public class CacheStatisticsProvider {
 
    private Stats statistics;
 
    @Inject
-   private CacheProvider cacheProvider;
+   CacheProvider cacheProvider;
+
+   @Inject
+   ReportStatisticsProvider reportStatisticsProvider;
 
    /**
-    * Constructor, gets the DefaultCacheManager object and retrieves the statistics from it.
+    * Gets the DefaultCacheManager object and retrieves the statistics from it.
     */
-   public CacheStatisticsProvider() {
+   @PostConstruct
+   public void init() {
       DefaultCacheManager manager = cacheProvider.getCacheManager();
       statistics = manager.getCache(CacheProvider.REPORT_CACHE_NAME).getAdvancedCache().getStats();
    }
@@ -35,7 +42,6 @@ public class CacheStatisticsProvider {
    public Map<String, Long> getCacheStatisticsAsMap() {
       Map<String, Long> stats = new HashMap<String, Long>();
 
-      ReportStatisticsProvider reportStatisticsProvider = new ReportStatisticsProvider();
       stats.put("Duration of Data Retrieval in MilliSeconds", reportStatisticsProvider.getExecutionTimeInMillis());
       stats.put("Total number of entries in the cache", getTotalNumberOfEntries());
       stats.put("Current number of entries", (long) getCurrentNumberOfEntries());

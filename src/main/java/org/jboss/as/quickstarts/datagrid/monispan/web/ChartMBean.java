@@ -28,6 +28,9 @@ import java.util.TreeSet;
 @Named("chartMbean")
 public class ChartMBean {
 
+   @Inject
+   ReportStatisticsProvider reportStatisticsProvider;
+
    /**
     * Parameter name for the identifying full or partial reports.
     */
@@ -51,7 +54,6 @@ public class ChartMBean {
       String param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(PARAM_FULL_REPORT);
       Map<String, Report> cacheData = null;
 
-      ReportStatisticsProvider reportStatisticsProvider = new ReportStatisticsProvider();
       cacheData = reportStatisticsProvider.getEntriesFromCache(param != null && param.equals("true"));
 
       Set<Date> orderedSet = getSetOfKeys(cacheData);

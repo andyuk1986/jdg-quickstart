@@ -23,7 +23,6 @@ import java.util.Map;
  * @author Anna Manukyan
  */
 @ApplicationScoped
-@Named
 public class ReportStatisticsProvider {
 
    @Inject
@@ -94,11 +93,6 @@ public class ReportStatisticsProvider {
       }
 
       executionTimeInMillis = System.currentTimeMillis() - startTime;
-
-      Map<String,Report> elementsInCache = cacheProvider.getCache(CacheProvider.REPORT_CACHE_NAME);
-      for(String elem : elementsInCache.keySet()) {
-         System.out.println(elem);
-      }
 
       return cacheEntries;
    }

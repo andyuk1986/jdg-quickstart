@@ -23,7 +23,7 @@ import java.util.Random;
  *
  * @author Anna Manukyan
  */
-@Named(value = "homePage")
+@Named("homePage")
 public class HomePage {
 
    private static final String PARAM_FULL_REPORT = "full";
@@ -31,12 +31,14 @@ public class HomePage {
    @Inject
    ReportStatisticsProvider reportStatisticsProvider;
 
+   @Inject
+   CacheStatisticsProvider statistics;
+
    @Produces @RequestScoped
    @Named("statisticsChart")
    public List<Report> generateStatisticsChart() throws IOException {
       String param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(PARAM_FULL_REPORT);
 
-      //ReportStatisticsProvider reportStatisticsProvider = new ReportStatisticsProvider();
       return reportStatisticsProvider.getReportStatistics(param != null && param.equals("true"));
    }
 
@@ -45,7 +47,6 @@ public class HomePage {
     * @return        the list which contains entryset of infinispan statistics.
     */
    public List<Map.Entry<String, Long>> generateInfinispanStatistics() {
-      CacheStatisticsProvider statistics = new CacheStatisticsProvider();
       Map<String, Long> stats = statistics.getCacheStatisticsAsMap();
 
       return new ArrayList<Map.Entry<String, Long>>(stats.entrySet());

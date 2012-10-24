@@ -158,11 +158,9 @@ language governing permissions and limitations under the License. -->
 
         <!-- JaxRS necessary for using RestEasy. -->
         <dependency>
-            <groupId>org.jboss.spec.javax.ws.rs</groupId>
-            <artifactId>jboss-jaxrs-api_1.1_spec</artifactId>
-            <version>1.0.0.Final</version>
-            <type>pom</type>
-            <scope>provided</scope>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>jaxrs-api</artifactId>
+            <version>2.3.2.Final</version>
         </dependency>
 
         <!-- Rest Easy library necessary for performing Rest Calls. -->
@@ -171,19 +169,6 @@ language governing permissions and limitations under the License. -->
             <artifactId>resteasy-jaxrs</artifactId>
             <version>2.2.1.GA</version>
             <scope>provided</scope>
-        </dependency>
-
-        <!-- Rest Easy Library necessary for performing Rest calls. -->
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-multipart-provider</artifactId>
-            <version>2.2.1.GA</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>resteasy-jaxrs</artifactId>
-                    <groupId>org.jboss.resteasy</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- JSFlot library which is located in ./lib directory and is used for showing charts / graphs. -->
