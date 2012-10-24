@@ -1,6 +1,7 @@
 package org.jboss.as.quickstarts.datagrid.monispan;
 
 import org.jboss.as.quickstarts.datagrid.monispan.cache.CacheProvider;
+import org.jboss.as.quickstarts.datagrid.monispan.cache.CacheStatisticsProvider;
 import org.jboss.as.quickstarts.datagrid.monispan.jsf.StartupInitListener;
 import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
 import org.jboss.as.quickstarts.datagrid.monispan.rest.ReportReceiverRestService;
@@ -77,7 +78,7 @@ public class ReportStatisticsProvider {
       long notifFrequency = StartupInitListener.getFrequency();
       Date currentDate = new Date();
 
-      while(dateKey.before(currentDate)) {
+      while (dateKey.before(currentDate)) {
          String key = GENERAL_DATE_FORMATTER.format(dateKey);
          Report rep = cacheProvider.getCache(CacheProvider.REPORT_CACHE_NAME).get(key);
 
@@ -115,7 +116,9 @@ public class ReportStatisticsProvider {
          boolean isCorrectKeyFound = false;
          Date currentDate = new Date();
          while(!isCorrectKeyFound && firstKey.before(currentDate)) {
-            if(cacheProvider.getCache(CacheProvider.REPORT_CACHE_NAME).get(GENERAL_DATE_FORMATTER.format(firstKey)) != null) {
+            String date = GENERAL_DATE_FORMATTER.format(firstKey);
+
+            if(cacheProvider.getCache(CacheProvider.REPORT_CACHE_NAME).get(date) != null) {
                isCorrectKeyFound = true;
             } else {
                Calendar c = Calendar.getInstance();

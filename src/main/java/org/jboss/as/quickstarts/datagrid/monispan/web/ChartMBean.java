@@ -51,10 +51,9 @@ public class ChartMBean {
       chartData.setMode(CHART_MODE);
       chartData.setWidth(CHART_WIDTH_IN_PIXELS);
 
-      String param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(PARAM_FULL_REPORT);
       Map<String, Report> cacheData = null;
 
-      cacheData = reportStatisticsProvider.getEntriesFromCache(param != null && param.equals("true"));
+      cacheData = reportStatisticsProvider.getEntriesFromCache(isFullReportNeeded());
 
       Set<Date> orderedSet = getSetOfKeys(cacheData);
       for(Date d : orderedSet) {
@@ -64,6 +63,12 @@ public class ChartMBean {
       }
       series1DataList.setLabel("User Count");
       series2DataList.setLabel("Sent Notification Count");
+   }
+
+   public boolean isFullReportNeeded() {
+      String param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(PARAM_FULL_REPORT);
+
+      return (param != null && param.equals("true"));
    }
 
    private Set<Date> getSetOfKeys(Map<String, Report> cacheData) {

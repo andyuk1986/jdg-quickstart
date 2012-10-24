@@ -76,7 +76,7 @@ public class CacheProvider {
             .addProperty("connectionFactoryClass", "org.infinispan.loaders.jdbc.connectionfactory.ManagedConnectionFactory")
             .addProperty("idColumnType", "VARCHAR")
             .addProperty("dataColumnType", "BINARY")
-            .addProperty("dropTableOnExit", "false")
+            .addProperty("dropTableOnExit", "true")
             .addProperty("createTableOnStart", "true")
             .addProperty("databaseType", "H2")
             .addProperty("datasourceJndiLocation", "java:jboss/datasources/ExampleDS")
