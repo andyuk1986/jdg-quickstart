@@ -6,7 +6,9 @@ import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
 import org.jboss.as.quickstarts.datagrid.monispan.rest.ReportReceiverRestService;
 
 import javax.annotation.ManagedBean;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -20,11 +22,12 @@ import java.util.Map;
  *
  * @author Anna Manukyan
  */
-@ManagedBean
+@ApplicationScoped
+@Named
 public class ReportStatisticsProvider {
 
    @Inject
-   private CacheProvider cacheProvider;
+   CacheProvider cacheProvider;
 
    /**
     * The format to which the date is corresponds in the project.

@@ -36,6 +36,9 @@ public class ReportReceiverRestService {
    @Inject
    private CacheProvider cacheProvider;
 
+   @Inject
+   ReportStatisticsProvider reportStatisticsProvider;
+
    @GET
    @Path("{userCount}/{notifCount}/{date}")
    @Produces("text/plain")
@@ -64,13 +67,10 @@ public class ReportReceiverRestService {
 
          reportSet.add(report);
          if(reportSet.size() == StartupInitListener.getThreadNum()) {
-            System.out.println(cacheProvider.getCache(CacheProvider.REPORT_CACHE_NAME));
-
-            ReportStatisticsProvider reportStatisticsProvider = new ReportStatisticsProvider();
-            /*Report finalReport = reportStatisticsProvider.getTotalReport(reportSet);
+            Report finalReport = reportStatisticsProvider.getTotalReport(reportSet);
             cacheProvider.put(CacheProvider.REPORT_CACHE_NAME, key, finalReport);
 
-            groupMap.remove(key);*/
+            groupMap.remove(key);
          }
       }
 

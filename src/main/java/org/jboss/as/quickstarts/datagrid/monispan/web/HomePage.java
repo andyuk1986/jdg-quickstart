@@ -29,7 +29,7 @@ public class HomePage {
    private static final String PARAM_FULL_REPORT = "full";
 
    @Inject
-   private ReportStatisticsProvider reportStatisticsProvider;
+   ReportStatisticsProvider reportStatisticsProvider;
 
    @Produces @RequestScoped
    @Named("statisticsChart")
