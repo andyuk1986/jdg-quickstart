@@ -2,7 +2,7 @@ Monispan: Basic Infinispan example
 =================================
 Author: Anna Manukyan
 Level: Intermediate
-Technologies: Infinispan, CDI, RestEasy, RichFaces, JSFlot
+Technologies: Infinispan, CDI, RestEasy, JSF, RichFaces, JSFlot
 Summary: Shows how to use Infinispan instead of a relational database.
 Target Product: JDG
 
@@ -13,14 +13,18 @@ Monispan is a simple web application that uses Infinispan Cache instead of a rel
 
 The application simulates basic monitoring system which collects and shows basic statistics for website, e.g. users or sent notifications count.
 The purpose is to simulate the continuous fresh data flow, so that the old data is evicted and stored in cache store and the fresh data is always on the page.
-The application consists of simulator threads, which simulate the reports from different nodes containing statistical data.
-This data is calculated and stored in the cache.
 
-The home page of the application shows the calculated statistical data for the last minute. The data for current time is shown
-in data table, and the data for the last minute is shown via chart using JSFlot technology. The page also contains the
-cache usage statistics as well as the duration of data retreival for the last minute.
+The application simulates the monitoring system. It consists of simulator threads, which work periodically with the provided frequency.
 
-There is also full report available, which shows the statistics for the whole lifetime of the application.
+The threads are performing REST calls to the application 2nd part, which parses and merges the report and puts the data into the cache.
+
+The application provides the WEB UI, which has 2 views:
+1. The full data report view - the whole data is shown as a graph as well as average calculated numbers.
+
+2. The recent data report view - the data for the last minute is shown with it's corresponding graph and avg calculations.
+
+Both reports are visualised with graph generated using JSFlot library.
+The page also contains the cache usage statistics as well as the duration of data retrieval for the last minute.
 
 Application Configuration
 -------------------------
@@ -35,9 +39,9 @@ serverPort                 - the port on which the application server is running
 System requirements
 -------------------
 
-All you need to build this project is Java 6.0 (Java SDK 1.6) or better, Maven 3.0 or better.
+All you need to build this project is Java 6.0 (Java SDK 1.6) or higher, Maven 3.0 or higher.
 
-The application this project produces is designed to be run on JBoss Enterprise Application Platform 6 or JBoss AS 7. 
+The application, which this project produces, is designed to be run on JBoss Enterprise Application Platform 6 or JBoss AS 7.
 
  
 Configure Maven
@@ -67,7 +71,7 @@ _NOTE: The following build command assumes you have configured your Maven user s
 
         mvn clean package jboss-as:deploy
         
-4. This will deploy `target/jboss-as-carmart.war` to the running instance of the server.
+4. This will deploy `target/jboss-as-monispan.war` to the running instance of the server.
  
 
 Access the application
