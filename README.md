@@ -16,9 +16,17 @@ The purpose is to simulate the continuous fresh data flow, so that the old data 
 
 The application simulates the monitoring system. It consists of simulator threads, which work periodically with the provided frequency.
 
-The threads are performing REST calls to the application 2nd part, which parses and merges the report and puts the data into the cache.
+Each thread represents the fake front end server, which has some online users on it and it provides periodically information about the status
+of online users or sent emails to these users on it.
+
+So the threads are performing REST calls to the application's 2nd part, and provides this basic information to it like the number of users or
+the number of sent email notifications to these users (of course the numbers are simulated).
+
+The reports are delivered by the REST service at the same moment, are merged and stored as one report in the cache. This process
+happens periodically with the specified period of time.
 
 The application provides the WEB UI, which has 2 views:
+
 1. The full data report view - the whole data is shown as a graph as well as average calculated numbers.
 
 2. The recent data report view - the data for the last minute is shown with it's corresponding graph and avg calculations.
