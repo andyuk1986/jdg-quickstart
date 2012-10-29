@@ -22,8 +22,8 @@ of online users or sent emails to these users on it.
 So the threads are performing REST calls to the application's 2nd part, and provides this basic information to it like the number of users or
 the number of sent email notifications to these users (of course the numbers are simulated).
 
-The reports are delivered by the REST service at the same moment, are merged and stored as one report in the cache. This process
-happens periodically with the specified period of time.
+The reports are delivered by the REST service simultaneously, so the service merges the reports as one and stores it in the cache.
+This process happens periodically with the specified period of time.
 
 The application provides the WEB UI, which has 2 views:
 
