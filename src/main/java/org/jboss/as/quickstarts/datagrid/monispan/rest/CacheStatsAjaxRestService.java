@@ -9,10 +9,9 @@ import javax.ws.rs.Produces;
 import java.util.Map;
 
 /**
- * // TODO: Document this
+ * Rest service, which provides the cache statistics as a response. This service is accessible by /cachestats URL.
  *
- * @author anna.manukyan
- * @since 4.0
+ * @author Anna Manukyan
  */
 @Path("/cachestats")
 public class CacheStatsAjaxRestService {

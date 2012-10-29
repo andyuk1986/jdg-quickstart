@@ -14,23 +14,22 @@ import org.infinispan.notifications.cachelistener.event.Event;
 import org.jboss.as.quickstarts.datagrid.monispan.jsf.StartupInitListener;
 import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
 
-import javax.ejb.Startup;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Cache Manager which provides functionality related to storing, evicting data in cache/data storage.
+ * Cache Manager which configures and starts the Infinispan Cache, as well as provides functionality related to storing,
+ * getting data from cache/data storage.
  *
  * @author Anna Manukyan
  */
 @ApplicationScoped
 public class CacheProvider {
    /**
-    * Constant - the number of seconds in milliseconds.
+    * Constant - the representation of 1 minute in millisecond.
     */
-   public static final long SECOND_IN_MILLIS = 60 * 1000;
+   public static final long MINUTE_IN_MILLISECOND = 60 * 1000;
    /**
     * The minutes during which the statistics should be shown.
     */
@@ -50,24 +49,38 @@ public class CacheProvider {
    /**
     * Configures and starts cache with the provided name. The cache is configured in the following way:
     *     no clustering is activated, eviction is set with LRU strategy,
-    *     the JDBCStringBasedCacheStore is used, for storing part of the data and uses H2 database.
-    *
+    *     the JDBCStringBasedCacheStore is used, for storing part of the data and uses H2 database as a cache store.
     */
    public void startCache() {
       if(cacheManager == null) {
+         // GlobalConfiguration for Infinispan cache config:
          GlobalConfiguration globalConfiguration = new GlobalConfigurationBuilder().globalJmxStatistics().
+               // the jmx statistics are enabled with custom name;
                enabled(true).allowDuplicateDomains(true).jmxDomain("org.jboss.as.quickstarts.datagrid.monispan")
+               // the async listener executor is enabled with max number of threads as 5 - this setting allows to have simultaneously
+               // running 5 threads in an executor thread, which notifies the asynchronously working listener about cache related
+               // events, e.g. eviction
                .asyncListenerExecutor().addProperty(MAX_THREADS_PROP_NAME, "5")
                .build();
          cacheManager = new DefaultCacheManager(globalConfiguration);
       }
 
-      long maxEntriesCount = (SECOND_IN_MILLIS / StartupInitListener.getFrequency()) * DATA_SHOW_MINUTES;
+      // Calculating the number of maxentries in the cache.
+      // The cache max entries number is calculated according to the provided number of simulator jobs execution frequency.
+      // E.g. if the execution frequency is set to 6 seconds, then the number of max entries is calculated as 10
+      // (as if on report is put to the cache each 6 seconds, there would be 10 reports in a minute maximum).
+      long maxEntriesCount = (MINUTE_IN_MILLISECOND / StartupInitListener.getFrequency()) * DATA_SHOW_MINUTES;
 
+      //The cache is configured in local mode, with enabled JMX statistics;
       Configuration config = new ConfigurationBuilder().jmxStatistics().enable().clustering().cacheMode(CacheMode.LOCAL)
+            // The eviction is enabled with LRU strategy and max number of entries calculated above;
             .eviction().maxEntries((int) maxEntriesCount).strategy(EvictionStrategy.LRU)
+            // The cache loader is enabled without preload and with enabled passivation so that in case of eviction the
+            // entries are stored in the cache store;
             .loaders().passivation(true).preload(false).shared(false)
+            //As a CacheLoader the JDBCStringBasedCacheStore is added, as the keys for the cache are Strings.
             .addCacheLoader().cacheLoader(new JdbcStringBasedCacheStore()).fetchPersistentState(false).purgeOnStartup(false)
+            //As a storage h2 database is used which parameters are configured below.
             .addProperty("stringsTableNamePrefix", "monispan")
             .addProperty("idColumnName", "id")
             .addProperty("dataColumnName", "data")
@@ -85,6 +98,8 @@ public class CacheProvider {
       notifListener = new AsyncNotifListener();
 
       cacheManager.defineConfiguration(REPORT_CACHE_NAME, config);
+
+      //Attaching asynchronous Listener to the cache, so that the number of evictions is properly calculated.
       cacheManager.getCache(REPORT_CACHE_NAME).addListener(notifListener);
    }
 
@@ -139,7 +154,7 @@ public class CacheProvider {
       private int counter = 0;
 
       @CacheEntriesEvicted
-      public synchronized void handlePassivationActivation(Event event) {
+      public synchronized void handleEvictions(Event event) {
          if(event.getType() == Event.Type.CACHE_ENTRY_EVICTED) {
             counter++;
          }

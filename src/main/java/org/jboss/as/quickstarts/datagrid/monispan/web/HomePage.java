@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * Managed bean for view.
+ * Managed bean for full and recent reports view.
  *
  * @author Anna Manukyan
  */
@@ -50,12 +50,20 @@ public class HomePage {
       return new ArrayList<Map.Entry<String, Long>>(stats.entrySet());
    }
 
+   /**
+    * Returns whether the full report is needed or no.
+    * @return           <code>true</code>, if full report is needed, otherwise <code>false</code>.
+    */
    public boolean isFullReportNeeded() {
       String param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(PARAM_FULL_REPORT);
 
       return (param != null && param.equals("true"));
    }
 
+   /**
+    * Returns the page title to show based on whether the full report is shown or not.
+    * @return        the page title to show.
+    */
    public String getPageTitle() {
       String pageTitle = "";
 
@@ -68,6 +76,11 @@ public class HomePage {
       return pageTitle;
    }
 
+   /**
+    * Returns the page description to show based on whether the full report is shown or not.
+    *
+    * @return        the page description to show on page.
+    */
    public String getPageDescription() {
       String description = "";
 

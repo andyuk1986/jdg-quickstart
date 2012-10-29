@@ -22,6 +22,7 @@ import java.util.Map;
 
 /**
  * Servlet which receives reports regarding user statistics. All data is processed and stored in the cache.
+ * The service is accessible via /report path.
  *
  * @author Anna Manukyan
  */

@@ -71,6 +71,8 @@ public class ChartMBean {
       return (param != null && param.equals("true"));
    }
 
+   //--------------------------------- Methods neccessary for showing the graph ---------------------------
+
    private Set<Date> getSetOfKeys(Map<String, Report> cacheData) {
       Set<Date> orderedSet = new TreeSet<Date>();
 
