@@ -17,9 +17,9 @@
          </h:form>
       </a4j:region>
       <h:form id="statisticsForm">
-            <script type="text/javascript">
-               $.noConflict();
-            </script>
+         <script type="text/javascript">
+            $.noConflict();
+         </script>
          <h:panelGroup id="chart">
             <jsflot:flotChart id="valueTimeChart"
                               value="#{chartSeriesData}"
@@ -31,20 +31,22 @@
                               subtitle="#{homePage.chartData.subtitle}"
                               chartType="#{homePage.chartData.chartType}">
             </jsflot:flotChart>
+
+            <span style="color: black;">*Please note, that the time axis is in UTC.</span>
          </h:panelGroup>
 
-            <h2>
-               JDG Cache Usage Statistics
-            </h2>
-            <h:dataTable value="#{homePage.generateInfinispanStatistics()}" var="stat" style="border: 2px grey solid; margin: 20px;" rules="all"
-                         cellpadding="12" cellspacing="12" id="cacheStats">
-               <h:column>
-                  <p><h:outputText value="#{stat.key}" /></p>
-               </h:column>
-               <h:column>
-                  <p><h:outputText value="#{stat.value}" /></p>
-               </h:column>
-            </h:dataTable>
+         <h2 style="padding-top: 20px;">
+            JDG Cache Usage Statistics
+         </h2>
+         <h:dataTable value="#{homePage.generateInfinispanStatistics()}" var="stat" style="border: 2px grey solid; margin: 20px;" rules="all"
+                      cellpadding="12" cellspacing="12" id="cacheStats">
+            <h:column>
+               <p><h:outputText value="#{stat.key}" /></p>
+            </h:column>
+            <h:column>
+               <p><h:outputText value="#{stat.value}" /></p>
+            </h:column>
+         </h:dataTable>
       </h:form>
    </ui:define>
 

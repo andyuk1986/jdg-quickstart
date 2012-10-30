@@ -52,10 +52,11 @@ public class CacheStatisticsProvider {
       stats.put("Duration of Data Retrieval in MilliSeconds", reportStatisticsProvider.getExecutionTimeInMillis());
       stats.put("Total number of entries in the cache", getTotalNumberOfEntries());
       stats.put("Current number of entries", (long) getCurrentNumberOfEntries());
-      stats.put("Number Of Evictions", getEvictions());
       stats.put("Number of Hits", getHits());
       stats.put("Number of Misses", getMisses());
-      stats.put("Number of Stores To Cache", getStores());
+      stats.put("Number of Activations During Last Execution", (long) getActivations());
+      stats.put("Number of Loads During Last Execution", (long) getActivations());
+      stats.put("Number of Passivations During Last Execution", (long) getPassivations());
 
       return stats;
    }
@@ -77,25 +78,12 @@ public class CacheStatisticsProvider {
    }
 
    /**
-    * Returns the number of evictions in the cache. Note: as the getEvictions() of Stat class, works with some other
-    * logic, the evictions are counted manually using async listener.
-    *
-    * @return           the number of performed evictions.
-    */
-   public long getEvictions() {
-      return cacheProvider.getNotifListener().getCounter();
-   }
-
-   /**
-    * Number of total stores to the cache.
-    * @return           the number of total stores to the cache.
-    */
-   public long getStores() {
-      return statistics.getStores();
-   }
-
-   /**
     * Returns the number of hits from the cache.
+    *
+    * The number of hits should be usually equal to entryCountInMinute + 1. The last 1 is because of first available key
+    * generation. As soon as the value with specified generated key is found, that key is returned, which means the number
+    * of hits will be always more with 1.
+    *
     * @return           the number of all hits from the cache.
     */
    public long getHits() {
@@ -104,9 +92,27 @@ public class CacheStatisticsProvider {
 
    /**
     * Returns the number of misses from the cache.
+    *
+    * The number of hits is the number of attempts to get the value with generated key for finding out the first valid key.
     * @return           the number of all misses from the cache.
     */
    public long getMisses() {
       return statistics.getMisses();
+   }
+
+   /**
+    * Returns the number of activations from the cache during the last execution.
+    * @return        the number of activations during the last execution.
+    */
+   public int getActivations() {
+      return cacheProvider.getNotifListener().getActivationCounter();
+   }
+
+   /**
+    * Returns the number of passivations during the last execution.
+    * @return        the number of passivations during the last execution.
+    */
+   public int getPassivations() {
+      return cacheProvider.getNotifListener().getPassivationCounter();
    }
 }

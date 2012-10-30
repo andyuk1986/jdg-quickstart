@@ -10,11 +10,19 @@ import org.infinispan.loaders.jdbc.stringbased.JdbcStringBasedCacheStore;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntriesEvicted;
+import org.infinispan.notifications.cachelistener.annotation.CacheEntryActivated;
+import org.infinispan.notifications.cachelistener.annotation.CacheEntryLoaded;
+import org.infinispan.notifications.cachelistener.annotation.CacheEntryPassivated;
+import org.infinispan.notifications.cachelistener.event.CacheEntriesEvictedEvent;
+import org.infinispan.notifications.cachelistener.event.CacheEntryActivatedEvent;
+import org.infinispan.notifications.cachelistener.event.CacheEntryLoadedEvent;
+import org.infinispan.notifications.cachelistener.event.CacheEntryPassivatedEvent;
 import org.infinispan.notifications.cachelistener.event.Event;
 import org.jboss.as.quickstarts.datagrid.monispan.jsf.StartupInitListener;
 import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -151,22 +159,62 @@ public class CacheProvider {
     */
    @Listener(sync=false)
    public class AsyncNotifListener {
-      private int counter = 0;
+      private int activationCounter = 0;
+      private int passivationCounter = 0;
+      private int loadedCounter = 0;
 
-      @CacheEntriesEvicted
-      public synchronized void handleEvictions(Event event) {
-         if(event.getType() == Event.Type.CACHE_ENTRY_EVICTED) {
-            counter++;
+      @CacheEntryActivated
+      @CacheEntryPassivated
+      @CacheEntryLoaded
+      public synchronized void handleActivations(Event event) {
+         if(!event.isPre()) {
+            if(event.getType() == Event.Type.CACHE_ENTRY_ACTIVATED) {
+               CacheEntryActivatedEvent ev = (CacheEntryActivatedEvent) event;
+               String key = (String) ev.getKey();
+               activationCounter++;
+            } else if(event.getType() == Event.Type.CACHE_ENTRY_PASSIVATED) {
+               CacheEntryPassivatedEvent ev = (CacheEntryPassivatedEvent) event;
+               String key = (String) ev.getKey();
+               passivationCounter++;
+            } else if(event.getType() == Event.Type.CACHE_ENTRY_LOADED) {
+               CacheEntryLoadedEvent ev = (CacheEntryLoadedEvent) event;
+               String key = (String) ev.getKey();
+               loadedCounter++;
+            }
          }
       }
 
+      public void resetCounters() {
+         activationCounter = 0;
+         passivationCounter = 0;
+         loadedCounter = 0;
+      }
+
       /**
-       * Returns the number of total evictions during app lifetime.
-       * @return                 the total evictions number.
+       * Returns the number of total activations during app lifetime.
+       * @return                 the total activation number.
        *
        */
-      public int getCounter() {
-         return counter;
+      public int getActivationCounter() {
+         return activationCounter;
+      }
+
+      /**
+       * Returns the number of total passivations during app lifetime.
+       * @return                 the total passivations number.
+       *
+       */
+      public int getPassivationCounter() {
+         return passivationCounter;
+      }
+
+      /**
+       * Returns the number of total number of loaded entries during app lifetime.
+       * @return                 the total loaded entries number.
+       *
+       */
+      public int getLoadedCounter() {
+         return loadedCounter;
       }
    }
 }

@@ -10,20 +10,16 @@ import org.jsflot.xydata.XYDataPoint;
 import org.jsflot.xydata.XYDataSetCollection;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -42,6 +38,9 @@ public class HomePage {
 
    @Inject
    CacheStatisticsProvider statistics;
+
+   @Inject
+   CacheProvider cacheProvider;
 
    /**
     * Parameter name for the identifying full or partial reports.
@@ -66,6 +65,10 @@ public class HomePage {
    public List<Map.Entry<String, Long>> generateInfinispanStatistics() {
       Map<String, Long> stats = statistics.getCacheStatisticsAsMap();
 
+      for(Map.Entry<String, Long> entry : stats.entrySet()) {
+         System.out.println(entry.getKey() + "  " + entry.getValue());
+      }
+      cacheProvider.getNotifListener().resetCounters();
       return new ArrayList<Map.Entry<String, Long>>(stats.entrySet());
    }
 

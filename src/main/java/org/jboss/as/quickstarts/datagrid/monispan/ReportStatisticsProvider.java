@@ -90,23 +90,25 @@ public class ReportStatisticsProvider {
 
       Date currentDate = new Date();
 
-      //looping till the generated key doesn't exceed the current date
-      while (dateKey.before(currentDate)) {
-         String key = GENERAL_DATE_FORMATTER.format(dateKey);
+      if(dateKey != null) {
+         //looping till the generated key doesn't exceed the current date
+         while (dateKey.before(currentDate)) {
+            String key = GENERAL_DATE_FORMATTER.format(dateKey);
 
-         //Retrieves the cache entry by generated key.
-         //The entry may be either immediately available or may be evicted and stored in CacheStore
-         Report rep = cacheProvider.getCache(CacheProvider.REPORT_CACHE_NAME).get(key);
+            //Retrieves the cache entry by generated key.
+            //The entry may be either immediately available or may be evicted and stored in CacheStore
+            Report rep = cacheProvider.getCache(CacheProvider.REPORT_CACHE_NAME).get(key);
 
-         if(rep != null) {
-            cacheEntries.put(key, rep);
+            if(rep != null) {
+               cacheEntries.put(key, rep);
+            }
+
+            //The next key is generated according to the frequency of placing reports to the cache. The next key
+            //should be current_key (as date) + job_execution_frequency(in milliseconds)
+            dateKey = getNextPossibleDateKey(dateKey, (int) notifFrequency);
          }
 
-         //The next key is generated according to the frequency of placing reports to the cache. The next key
-         //should be current_key (as date) + job_execution_frequency(in milliseconds)
-         dateKey = getNextPossibleDateKey(dateKey, (int) notifFrequency);
       }
-
       executionTimeInMillis = System.currentTimeMillis() - startTime;
 
       return cacheEntries;
@@ -156,15 +158,16 @@ public class ReportStatisticsProvider {
     * @return                          the first available key for retrieving data from cache.
     */
    private Date getFirstAvailableKey(final boolean isFullReportNeeded) {
-      Date firstKey = null;
-      if(isFullReportNeeded) {
-         //If full report is needed, then the very first report date is picked.
-         firstKey = ReportReceiverRestService.getFirstReportDate();
-      } else {
-         //The first key is current_date - 1 minute
+      //Setting the first key to the very first report date.
+      Date firstKey = ReportReceiverRestService.getFirstReportDate();
+      if(!isFullReportNeeded && firstKey != null) {
+         //If the recent report is needed , then the first key should be starting (current_date - 1) minute. But the method
+         // checks, if the (current_date - 1) < than the very first report date, then the first key is left as it is.
          Calendar now = Calendar.getInstance();
          now.add(Calendar.MINUTE, -CacheProvider.DATA_SHOW_MINUTES);
-         firstKey = now.getTime();
+         if(now.getTime().after(firstKey)) {
+            firstKey = now.getTime();
+         }
 
          boolean isCorrectKeyFound = false;
          Date currentDate = new Date();
