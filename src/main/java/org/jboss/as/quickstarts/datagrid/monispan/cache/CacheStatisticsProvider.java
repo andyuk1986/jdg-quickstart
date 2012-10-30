@@ -37,6 +37,13 @@ public class CacheStatisticsProvider {
 
    /**
     * Returns the Cache Usage Statistics as Map.
+    * The cache statistics consists of the following elements;
+    *
+    * Number of Hits - When the application generates keys and gets the data according to the keys, the hits number
+    *                  is increased.
+    *
+    * Number of misses - While the application generates the key, and it tries out each key to find the first available
+    *                    one. In case of wrong keys, the number of misses is incremented.
     * @return        the map, which contains cache usage statistics.
     */
    public Map<String, Long> getCacheStatisticsAsMap() {
@@ -46,8 +53,9 @@ public class CacheStatisticsProvider {
       stats.put("Total number of entries in the cache", getTotalNumberOfEntries());
       stats.put("Current number of entries", (long) getCurrentNumberOfEntries());
       stats.put("Number Of Evictions", getEvictions());
-      stats.put("Number of Retrievals", getRetrievals());
-      stats.put("Number of stores", getStores());
+      stats.put("Number of Hits", getHits());
+      stats.put("Number of Misses", getMisses());
+      stats.put("Number of Stores To Cache", getStores());
 
       return stats;
    }
@@ -87,10 +95,18 @@ public class CacheStatisticsProvider {
    }
 
    /**
-    * Returns the number of total retreivals from the cache.
-    * @return           the number of all retreivals from the cache.
+    * Returns the number of hits from the cache.
+    * @return           the number of all hits from the cache.
     */
-   public long getRetrievals() {
-      return statistics.getRetrievals();
+   public long getHits() {
+      return statistics.getHits();
+   }
+
+   /**
+    * Returns the number of misses from the cache.
+    * @return           the number of all misses from the cache.
+    */
+   public long getMisses() {
+      return statistics.getMisses();
    }
 }
