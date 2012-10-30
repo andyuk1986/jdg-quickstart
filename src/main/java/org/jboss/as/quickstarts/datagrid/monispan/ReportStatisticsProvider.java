@@ -51,38 +51,6 @@ public class ReportStatisticsProvider {
    private static final int SECOND_IN_MILLIS = 1000;
 
    /**
-    * Returns the "user statistics" - Total and average reports based on got data. Depending on the parameter, the report
-    * is full or partial, i.e. in case of the full report the whole data is picked.
-    *
-    * @param isFullReport        defines whether the report should be full or partial.
-    * @return                    the List object which contains Total and Average reports.
-    */
-   public List<Report> getReportStatistics(final boolean isFullReport) {
-      List<Report> reportList = new ArrayList<Report>();
-      //Retrieves the data from the cache depending on whether the full data is needed or only the data for the last
-      // minute.
-      Map<String, Report> cacheElems = getEntriesFromCache(isFullReport);
-
-      List<Report> valuesList= new ArrayList<Report>();
-      valuesList.addAll(cacheElems.values());
-
-      //The total report is calculated and created based on the retrieved information.
-      Report totalReport = getTotalReport(valuesList);
-      reportList.add(totalReport);
-
-      int cacheSize = cacheElems.size();
-      if(cacheSize > 0) {
-         //Average report is calculated and created based on the the retrieved information.
-         Report averageReport = new Report("avg", totalReport.getUserCount() / cacheSize,
-                                           totalReport.getSentNotificationCount() / cacheSize, null);
-         averageReport.setReportName("Average Numbers");
-         reportList.add(averageReport);
-      }
-
-      return reportList;
-   }
-
-   /**
     * Returns entries from the cache based on the provided parameter.
     * If the full report is needed, i.e. <code>isFullReport</code> is <code>true</code>, then the full data is retrieved
     * from the cache, otherwise only the data for the last minute.

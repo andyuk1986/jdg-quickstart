@@ -17,42 +17,19 @@
          </h:form>
       </a4j:region>
       <h:form id="statisticsForm">
-            <h:dataTable value="#{statisticsChart}" var="report" style="border: 2px grey solid; margin: 20px; width: 600px;" rules="all"
-                         cellpadding="12" cellspacing="12" columnClasses="column,column,column" id="dataStats">
-               <h:column>
-                  <h:outputText value="${report.reportName}"/>
-               </h:column>
-               <h:column>
-                  <f:facet name="header">
-                     <p>User Count</p>
-                  </f:facet>
-                  <p id="userCount_#{report.elemPrefix}">
-                     <h:outputText value="#{report.userCount}" />
-                  </p>
-               </h:column>
-
-               <h:column>
-                  <f:facet name="header">
-                     <p>Sent Notification Count</p>
-                  </f:facet>
-                  <p id="notifCount_#{report.elemPrefix}">
-                     <h:outputText value="#{report.sentNotificationCount}" />
-                  </p>
-               </h:column>
-            </h:dataTable>
             <script type="text/javascript">
                $.noConflict();
             </script>
          <h:panelGroup id="chart">
             <jsflot:flotChart id="valueTimeChart"
                               value="#{chartSeriesData}"
-                              height="#{chartMbean.chartData.height}"
-                              width="#{chartMbean.chartData.width}"
-                              mode="#{chartMbean.chartData.mode}"
-                              timeFormat="#{chartMbean.chartData.timeFormat}"
-                              title="#{chartMbean.chartData.title}"
-                              subtitle="#{chartMbean.chartData.subtitle}"
-                              chartType="#{chartMbean.chartData.chartType}">
+                              height="#{homePage.chartData.height}"
+                              width="#{homePage.chartData.width}"
+                              mode="#{homePage.chartData.mode}"
+                              timeFormat="#{homePage.chartData.timeFormat}"
+                              title="#{homePage.chartData.title}"
+                              subtitle="#{homePage.chartData.subtitle}"
+                              chartType="#{homePage.chartData.chartType}">
             </jsflot:flotChart>
          </h:panelGroup>
 
