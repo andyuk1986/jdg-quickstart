@@ -38,7 +38,7 @@
          <h2 style="padding-top: 20px;">
             JDG Cache Usage Statistics
          </h2>
-         <h:dataTable value="#{homePage.generateInfinispanStatistics()}" var="stat" style="border: 2px grey solid; margin: 20px;" rules="all"
+         <h:dataTable value="#{infinispanStatistics}" var="stat" style="border: 2px grey solid; margin: 20px;" rules="all"
                       cellpadding="12" cellspacing="12" id="cacheStats">
             <h:column>
                <p><h:outputText value="#{stat.key}" /></p>

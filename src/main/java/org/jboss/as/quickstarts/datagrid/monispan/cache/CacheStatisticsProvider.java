@@ -8,7 +8,9 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Class providing statistics regarding Cache usage.
@@ -47,16 +49,20 @@ public class CacheStatisticsProvider {
     * @return        the map, which contains cache usage statistics.
     */
    public Map<String, Long> getCacheStatisticsAsMap() {
-      Map<String, Long> stats = new HashMap<String, Long>();
+      Map<String, Long> stats = new LinkedHashMap<String, Long>();
 
-      stats.put("Duration of Data Retrieval in MilliSeconds", reportStatisticsProvider.getExecutionTimeInMillis());
-      stats.put("Total number of entries in the cache", getTotalNumberOfEntries());
-      stats.put("Current number of entries", (long) getCurrentNumberOfEntries());
       stats.put("Number of Hits", getHits());
       stats.put("Number of Misses", getMisses());
-      stats.put("Number of Activations During Last Execution", (long) getActivations());
-      stats.put("Number of Loads During Last Execution", (long) getActivations());
+
+      stats.put("Number of Evictions During Last Execution", (long) getEvictions());
       stats.put("Number of Passivations During Last Execution", (long) getPassivations());
+      stats.put("Number of Loads During Last Execution", (long) getLoads());
+
+      stats.put("Current number of entries", (long) getCurrentNumberOfEntries());
+      stats.put("Total number of entries in the cache", getTotalNumberOfEntries());
+      stats.put("Duration of Data Retrieval in MilliSeconds", reportStatisticsProvider.getExecutionTimeInMillis());
+
+
 
       return stats;
    }
@@ -104,8 +110,8 @@ public class CacheStatisticsProvider {
     * Returns the number of activations from the cache during the last execution.
     * @return        the number of activations during the last execution.
     */
-   public int getActivations() {
-      return cacheProvider.getNotifListener().getActivationCounter();
+   public int getLoads() {
+      return cacheProvider.getNotifListener().getLoadedCounter();
    }
 
    /**
@@ -114,5 +120,13 @@ public class CacheStatisticsProvider {
     */
    public int getPassivations() {
       return cacheProvider.getNotifListener().getPassivationCounter();
+   }
+
+   /**
+    * Returns the number of evictions during the last execution.
+    * @return        the number of evictions during the last execution.
+    */
+   public int getEvictions() {
+      return cacheProvider.getNotifListener().getEvictionCounter();
    }
 }

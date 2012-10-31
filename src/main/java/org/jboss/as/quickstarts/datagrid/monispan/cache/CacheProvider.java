@@ -159,44 +159,29 @@ public class CacheProvider {
     */
    @Listener(sync=false)
    public class AsyncNotifListener {
-      private int activationCounter = 0;
+      private int evictionCounter = 0;
       private int passivationCounter = 0;
       private int loadedCounter = 0;
 
-      @CacheEntryActivated
       @CacheEntryPassivated
       @CacheEntryLoaded
+      @CacheEntriesEvicted
       public synchronized void handleActivations(Event event) {
          if(!event.isPre()) {
-            if(event.getType() == Event.Type.CACHE_ENTRY_ACTIVATED) {
-               CacheEntryActivatedEvent ev = (CacheEntryActivatedEvent) event;
-               String key = (String) ev.getKey();
-               activationCounter++;
-            } else if(event.getType() == Event.Type.CACHE_ENTRY_PASSIVATED) {
-               CacheEntryPassivatedEvent ev = (CacheEntryPassivatedEvent) event;
-               String key = (String) ev.getKey();
+            if(event.getType() == Event.Type.CACHE_ENTRY_PASSIVATED) {
                passivationCounter++;
             } else if(event.getType() == Event.Type.CACHE_ENTRY_LOADED) {
-               CacheEntryLoadedEvent ev = (CacheEntryLoadedEvent) event;
-               String key = (String) ev.getKey();
                loadedCounter++;
+            } else if(event.getType() == Event.Type.CACHE_ENTRY_EVICTED) {
+               evictionCounter++;
             }
          }
       }
 
       public void resetCounters() {
-         activationCounter = 0;
+         evictionCounter = 0;
          passivationCounter = 0;
          loadedCounter = 0;
-      }
-
-      /**
-       * Returns the number of total activations during app lifetime.
-       * @return                 the total activation number.
-       *
-       */
-      public int getActivationCounter() {
-         return activationCounter;
       }
 
       /**
@@ -209,12 +194,21 @@ public class CacheProvider {
       }
 
       /**
-       * Returns the number of total number of loaded entries during app lifetime.
+       * Returns the number of loaded entries during app lifetime.
        * @return                 the total loaded entries number.
        *
        */
       public int getLoadedCounter() {
          return loadedCounter;
+      }
+
+      /**
+       * Returns the number of evicted entries during app lifetime.
+       * @return                 the total evicted entries number.
+       *
+       */
+      public int getEvictionCounter() {
+         return evictionCounter;
       }
    }
 }

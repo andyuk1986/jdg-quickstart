@@ -62,12 +62,11 @@ public class HomePage {
     * Returns the infinispan statistics for view.
     * @return        the list which contains entryset of infinispan statistics.
     */
+   @Produces @RequestScoped
+   @Named("infinispanStatistics")
    public List<Map.Entry<String, Long>> generateInfinispanStatistics() {
       Map<String, Long> stats = statistics.getCacheStatisticsAsMap();
 
-      for(Map.Entry<String, Long> entry : stats.entrySet()) {
-         System.out.println(entry.getKey() + "  " + entry.getValue());
-      }
       cacheProvider.getNotifListener().resetCounters();
       return new ArrayList<Map.Entry<String, Long>>(stats.entrySet());
    }
