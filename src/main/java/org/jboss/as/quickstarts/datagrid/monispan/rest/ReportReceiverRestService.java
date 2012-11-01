@@ -33,6 +33,7 @@ public class ReportReceiverRestService {
 
    public static final String OK_RESPONSE = "ok";
    private static Date firstReportDate = null;
+   private static Date lastReportDate = null;
 
    @Inject
    private CacheProvider cacheProvider;
@@ -44,7 +45,7 @@ public class ReportReceiverRestService {
    @Path("{userCount}/{notifCount}/{date}")
    @Produces("text/plain")
    public String doGet(@PathParam("userCount") int userCount, @PathParam("notifCount") int sentNotificationCount,
-                                @PathParam("date") String date) throws IOException {
+                                @PathParam("date") String date) throws IOException, ParseException {
 
       Report report = new Report(null, userCount, sentNotificationCount, date);
       return processReport(report);
@@ -55,11 +56,18 @@ public class ReportReceiverRestService {
     * @param nodeName            the node name received report from.
     * @return                    OK response.
    */
-   private String processReport(Report report) {
+   private String processReport(Report report) throws ParseException {
       String key = report.getReportDate();
 
       setFirstReportDate(report);
       synchronized (groupMap) {
+         Date reportDate = ReportStatisticsProvider.GENERAL_DATE_FORMATTER.parse(report.getReportDate());
+         if(lastReportDate != null) {
+            System.out.println("Difference: " + (reportDate.getTime() - lastReportDate.getTime()));
+         }
+         if (lastReportDate != null && (reportDate.getTime() - lastReportDate.getTime()) < StartupInitListener.getFrequency()) {
+            key = ReportStatisticsProvider.GENERAL_DATE_FORMATTER.format(reportDate);
+         }
          List<Report> reportSet = groupMap.get(key);
          if(reportSet == null) {
             reportSet = new ArrayList<Report>();
@@ -67,6 +75,7 @@ public class ReportReceiverRestService {
          }
 
          reportSet.add(report);
+         lastReportDate = reportDate;
          if(reportSet.size() == StartupInitListener.getThreadNum()) {
             Report finalReport = reportStatisticsProvider.getTotalReport(reportSet);
             cacheProvider.put(CacheProvider.REPORT_CACHE_NAME, key, finalReport);

@@ -112,6 +112,12 @@ public class HomePage {
 
       cacheData = reportStatisticsProvider.getEntriesFromCache(isFullReportNeeded());
 
+      if(cacheData.size() < 10) {
+         for(String keys : cacheData.keySet()) {
+            System.out.println(keys);
+         }
+      }
+
       Set<Date> orderedSet = getSetOfKeys(cacheData);
       for(Date d : orderedSet) {
          Report entry = cacheData.get(ReportStatisticsProvider.GENERAL_DATE_FORMATTER.format(d));
