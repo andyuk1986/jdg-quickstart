@@ -38,10 +38,7 @@ public class CacheProvider {
     * Constant - the representation of 1 minute in millisecond.
     */
    public static final long MINUTE_IN_MILLISECOND = 60 * 1000;
-   /**
-    * The minutes during which the statistics should be shown.
-    */
-   public static final int DATA_SHOW_MINUTES = 1;
+
    /**
     * The name of the reporting cache.
     */
@@ -77,7 +74,7 @@ public class CacheProvider {
       // The cache max entries number is calculated according to the provided number of simulator jobs execution frequency.
       // E.g. if the execution frequency is set to 6 seconds, then the number of max entries is calculated as 10
       // (as if on report is put to the cache each 6 seconds, there would be 10 reports in a minute maximum).
-      long maxEntriesCount = (MINUTE_IN_MILLISECOND / StartupInitListener.getFrequency()) * DATA_SHOW_MINUTES;
+      long maxEntriesCount = (MINUTE_IN_MILLISECOND / StartupInitListener.getFrequency()) * StartupInitListener.getDataShowMinutes();
 
       //The cache is configured in local mode, with enabled JMX statistics;
       Configuration config = new ConfigurationBuilder().jmxStatistics().enable().clustering().cacheMode(CacheMode.LOCAL)

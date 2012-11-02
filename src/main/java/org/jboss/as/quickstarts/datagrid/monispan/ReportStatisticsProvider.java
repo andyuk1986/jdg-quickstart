@@ -164,7 +164,7 @@ public class ReportStatisticsProvider {
          //If the recent report is needed , then the first key should be starting (current_date - 1) minute. But the method
          // checks, if the (current_date - 1) < than the very first report date, then the first key is left as it is.
          Calendar now = Calendar.getInstance();
-         now.add(Calendar.MINUTE, -CacheProvider.DATA_SHOW_MINUTES);
+         now.add(Calendar.MINUTE, -StartupInitListener.getDataShowMinutes());
          if(now.getTime().after(firstKey)) {
             firstKey = now.getTime();
          }

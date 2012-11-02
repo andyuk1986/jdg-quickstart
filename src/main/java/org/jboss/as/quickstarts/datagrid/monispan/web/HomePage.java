@@ -3,6 +3,7 @@ package org.jboss.as.quickstarts.datagrid.monispan.web;
 import org.jboss.as.quickstarts.datagrid.monispan.ReportStatisticsProvider;
 import org.jboss.as.quickstarts.datagrid.monispan.cache.CacheProvider;
 import org.jboss.as.quickstarts.datagrid.monispan.cache.CacheStatisticsProvider;
+import org.jboss.as.quickstarts.datagrid.monispan.jsf.StartupInitListener;
 import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
 import org.jsflot.components.FlotChartRendererData;
 import org.jsflot.xydata.XYDataList;
@@ -84,7 +85,7 @@ public class HomePage {
       } else {
          pageTitle = "Data For The Last Minute";
          pageDescription = "the report for the last minute";
-         information = "showing runtime data for User Count and Sent Notif. Count for the last " + CacheProvider.DATA_SHOW_MINUTES + " minute/s.";
+         information = "showing runtime data for User Count and Sent Notif. Count for the last " + StartupInitListener.getDataShowMinutes() + " minute/s.";
       }
 
       return pageTitle;

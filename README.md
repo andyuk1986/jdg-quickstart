@@ -43,6 +43,7 @@ simulatorNodeNum           - the number of simulator threads;
 execFreq                   - the frequency with which the simulator threads work;
 serverHost                 - the host where the application server is running;
 serverPort                 - the port on which the application server is running;
+dataShowMinutes            - the duration of time in minutes for which the recent report should be shown to the user.
 
 System requirements
 -------------------

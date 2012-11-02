@@ -63,12 +63,23 @@ public class StartupInitListener implements ServletContextListener {
    public static final String DEFAULT_EXECUTION_FREQUENCY = "10000";
 
    /**
+    * The duration of time in minutes for which the recent report should be shown.
+    */
+   public static final String DATA_SHOW_MINUTES = "dataShowMinutes;";
+
+   /**
+    * The default duration of time in minutes for whch the recent report should be shown.
+    */
+   public static final String DEFAULT_DATA_SHOW_MINUTES = "1";
+
+   /**
     * The name of the properties file.
     */
    public static final String PROPERTY_FILE_NAME = "jdg.properties";
 
    private static long frequency;
    private static int threadNum;
+   private static int dataShowMinutes;
 
    private Logger log = Logger.getLogger(this.getClass().getName());
 
@@ -91,7 +102,8 @@ public class StartupInitListener implements ServletContextListener {
       }
 
       threadNum = Integer.parseInt(prop.getProperty(NODE_NUMBER, DEFAULT_NODE_NUMBER));
-      frequency = Integer.parseInt(prop.getProperty(EXECUTION_FREQUENCY, DEFAULT_EXECUTION_FREQUENCY));
+      frequency = Long.parseLong(prop.getProperty(EXECUTION_FREQUENCY, DEFAULT_EXECUTION_FREQUENCY));
+      dataShowMinutes = Integer.parseInt(prop.getProperty(DATA_SHOW_MINUTES, DEFAULT_DATA_SHOW_MINUTES));
 
       String serverHost = prop.getProperty(SERVER_HOST, DEFAULT_SERVER_HOST);
       int serverPort = Integer.parseInt(prop.getProperty(SERVER_PORT, ""  + DEFAULT_SERVER_PORT));
@@ -101,6 +113,7 @@ public class StartupInitListener implements ServletContextListener {
 
       log.info("The node number is: " + threadNum);
       log.info("The frequency is: " + frequency);
+      log.info("The data show minutes is: " + dataShowMinutes);
 
       log.info("Starting Cache ...");
       cacheProvider.startCache();
@@ -126,8 +139,16 @@ public class StartupInitListener implements ServletContextListener {
     * Returns the number of simulator threads to be run.
     * @return              the number of threads to run.
     */
-   public static long getThreadNum() {
+   public static int getThreadNum() {
       return threadNum;
+   }
+
+   /**
+    * Returns the duration of time in minutes during which the recent report should be shown.
+    * @return              duration in minutes.
+    */
+   public static int getDataShowMinutes() {
+      return dataShowMinutes;
    }
 
    @Override
