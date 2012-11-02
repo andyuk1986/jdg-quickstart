@@ -129,13 +129,13 @@ language governing permissions and limitations under the License. -->
             <scope>provided</scope>
         </dependency>
 
-        <!-- Richfaces ui component library. -->
+        <!-- Richfaces ui component library. Is neccessary for view.-->
         <dependency>
             <groupId>org.richfaces.ui</groupId>
             <artifactId>richfaces-components-ui</artifactId>
         </dependency>
 
-        <!-- Richfaces core component. -->
+        <!-- Richfaces core component. Necesssary for view.-->
         <dependency>
             <groupId>org.richfaces.core</groupId>
             <artifactId>richfaces-core-impl</artifactId>
