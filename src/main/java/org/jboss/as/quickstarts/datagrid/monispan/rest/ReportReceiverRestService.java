@@ -6,7 +6,6 @@ import org.jboss.as.quickstarts.datagrid.monispan.jsf.StartupInitListener;
 import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
 
 import javax.annotation.ManagedBean;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -15,6 +14,7 @@ import javax.ws.rs.Produces;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +33,7 @@ public class ReportReceiverRestService {
 
    public static final String OK_RESPONSE = "ok";
    private static Date firstReportDate = null;
-   private static Date lastReportDate = null;
+   private static Date nextReportDate = null;
 
    @Inject
    private CacheProvider cacheProvider;
@@ -57,17 +57,10 @@ public class ReportReceiverRestService {
     * @return                    OK response.
    */
    private String processReport(Report report) throws ParseException {
-      String key = report.getReportDate();
-
       setFirstReportDate(report);
+
       synchronized (groupMap) {
-         Date reportDate = ReportStatisticsProvider.GENERAL_DATE_FORMATTER.parse(report.getReportDate());
-         if(lastReportDate != null) {
-            System.out.println("Difference: " + (reportDate.getTime() - lastReportDate.getTime()));
-         }
-         if (lastReportDate != null && (reportDate.getTime() - lastReportDate.getTime()) < StartupInitListener.getFrequency()) {
-            key = ReportStatisticsProvider.GENERAL_DATE_FORMATTER.format(reportDate);
-         }
+         String key = ReportStatisticsProvider.GENERAL_DATE_FORMATTER.format(nextReportDate);
          List<Report> reportSet = groupMap.get(key);
          if(reportSet == null) {
             reportSet = new ArrayList<Report>();
@@ -75,12 +68,18 @@ public class ReportReceiverRestService {
          }
 
          reportSet.add(report);
-         lastReportDate = reportDate;
+
          if(reportSet.size() == StartupInitListener.getThreadNum()) {
             Report finalReport = reportStatisticsProvider.getTotalReport(reportSet);
             cacheProvider.put(CacheProvider.REPORT_CACHE_NAME, key, finalReport);
 
             groupMap.remove(key);
+
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(nextReportDate);
+            cal.add(Calendar.MILLISECOND, (int) StartupInitListener.getFrequency());
+
+            nextReportDate = cal.getTime();
          }
       }
 
@@ -95,6 +94,7 @@ public class ReportReceiverRestService {
       if(firstReportDate == null) {
          try {
             firstReportDate = ReportStatisticsProvider.GENERAL_DATE_FORMATTER.parse(report.getReportDate());
+            nextReportDate = firstReportDate;
          } catch (ParseException e) {
             e.printStackTrace();
          }

@@ -91,11 +91,7 @@ public class ReportStatisticsProvider {
 
       if(dateKey != null) {
          //looping till the generated key doesn't exceed the current date
-         System.out.println("Current Date: " + dateKey + "  " + currentDate);
-
-         beginning:
          while (dateKey.before(currentDate)) {
-            System.out.println("Current Date: " + dateKey + "  " + currentDate);
             long notifFrequency = StartupInitListener.getFrequency();
 
             String key = GENERAL_DATE_FORMATTER.format(dateKey);
@@ -105,20 +101,13 @@ public class ReportStatisticsProvider {
             Report rep = cacheProvider.getCache(CacheProvider.REPORT_CACHE_NAME).get(key);
 
             if(rep != null) {
-               System.out.println("GOT Entry.");
                cacheEntries.put(key, rep);
-            } else {
-               //If the entry was not found with the key, this means that there was some delay in data insertion,
-               // so trying out with key with +1 second.
-               notifFrequency = SECOND_IN_MILLIS;
             }
 
             //The next key is generated according to the frequency of placing reports to the cache. The next key
             //should be current_key (as date) + job_execution_frequency(in milliseconds)
             dateKey = getNextPossibleDateKey(dateKey, (int) notifFrequency);
          }
-
-         System.out.println("END: Current Date: " + dateKey + "  " + currentDate);
       }
       executionTimeInMillis = System.currentTimeMillis() - startTime;
 
