@@ -7,9 +7,7 @@ import javax.inject.Inject;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.Properties;
-import java.util.Timer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -86,6 +84,9 @@ public class StartupInitListener implements ServletContextListener {
    @Inject
    private CacheProvider cacheProvider;
 
+   /** ScheduledExecutorService for starting the reporter thread. **/
+   private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(threadNum);
+
    /**
     * Loads the property file, and starts the Cache and simulator nodes based on the retrieved data.
     * @param servletContextEvent
@@ -118,12 +119,11 @@ public class StartupInitListener implements ServletContextListener {
       log.info("Starting Cache ...");
       cacheProvider.startCache();
 
-      ScheduledExecutorService s = Executors.newScheduledThreadPool(threadNum);
       for(int i = 1; i <= threadNum; i++) {
          String nodeName = "node" + i;
          Reporter r = new Reporter(nodeName, applicationUrl.toString());
 
-         s.scheduleWithFixedDelay(r, 5000, frequency, TimeUnit.MILLISECONDS);
+         scheduledExecutorService.scheduleWithFixedDelay(r, 5000, frequency, TimeUnit.MILLISECONDS);
       }
    }
 
@@ -153,6 +153,7 @@ public class StartupInitListener implements ServletContextListener {
 
    @Override
    public void contextDestroyed(ServletContextEvent servletContextEvent) {
+      scheduledExecutorService.shutdownNow();
       log.info("Context Destroyed!!!!!");
    }
 }
