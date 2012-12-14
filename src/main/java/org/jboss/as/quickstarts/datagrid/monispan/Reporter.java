@@ -38,7 +38,6 @@ public class Reporter implements Runnable {
     */
    @Override
    public void run() {
-      log.info("Performing Report: " + name);
       try {
          report();
       } catch (Exception e) {
@@ -52,6 +51,7 @@ public class Reporter implements Runnable {
       int sentNotificationCount = rand.nextInt(500);
 
       String dateFormatted = ReportStatisticsProvider.GENERAL_DATE_FORMATTER.format(new Date());
+      log.info("Report sent at " + dateFormatted);
       StringBuffer urlStr = new StringBuffer(webUrl);
       urlStr.append(REPORT_URL).append("/").append(sampleUserCount).append("/").append(sentNotificationCount)
             .append("/").append(dateFormatted);

@@ -25,6 +25,7 @@ import javax.enterprise.context.ApplicationScoped;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Cache Manager which configures and starts the Infinispan Cache, as well as provides functionality related to storing,
@@ -34,6 +35,7 @@ import java.util.Set;
  */
 @ApplicationScoped
 public class CacheProvider {
+
    /**
     * Constant - the representation of 1 minute in millisecond.
     */
@@ -48,13 +50,16 @@ public class CacheProvider {
     */
    private static final String MAX_THREADS_PROP_NAME = "maxThreads";
 
+   private Logger log = Logger.getLogger(this.getClass().getName());
+
    private DefaultCacheManager cacheManager;
+
    private AsyncNotifListener notifListener;
 
    /**
     * Configures and starts cache with the provided name. The cache is configured in the following way:
-    *     no clustering is activated, eviction is set with LRU strategy,
-    *     the JDBCStringBasedCacheStore is used, for storing part of the data and uses H2 database as a cache store.
+    * no clustering is activated, eviction is set with LRU strategy, the JDBCStringBasedCacheStore is used,
+    * for storing part of the data and uses H2 database as a cache store.
     */
    public void startCache() {
       if(cacheManager == null) {
@@ -75,6 +80,7 @@ public class CacheProvider {
       // E.g. if the execution frequency is set to 6 seconds, then the number of max entries is calculated as 10
       // (as if on report is put to the cache each 6 seconds, there would be 10 reports in a minute maximum).
       long maxEntriesCount = (MINUTE_IN_MILLISECOND / StartupInitListener.getFrequency()) * StartupInitListener.getDataShowMinutes();
+      log.info("Max entries in cache (for eviction): " + maxEntriesCount);
 
       //The cache is configured in local mode, with enabled JMX statistics;
       Configuration config = new ConfigurationBuilder().jmxStatistics().enable().clustering().cacheMode(CacheMode.LOCAL)
