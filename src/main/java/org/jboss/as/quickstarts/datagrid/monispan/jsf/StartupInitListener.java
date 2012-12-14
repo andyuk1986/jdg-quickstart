@@ -51,9 +51,9 @@ public class StartupInitListener implements ServletContextListener {
    public static final int DEFAULT_SERVER_PORT= 8080;
 
    /**
-    * Default number of simulator nodes, in case the property is not provided.
+    * Default number of simulator nodes.
     */
-   public static final String DEFAULT_NODE_NUMBER = "5";
+   public static final int DEFAULT_NODE_COUNT = 1;
 
    /**
     * The default number of simulators execution frequency, in case the property is not provided.
@@ -76,7 +76,7 @@ public class StartupInitListener implements ServletContextListener {
    public static final String PROPERTY_FILE_NAME = "jdg.properties";
 
    private static long frequency;
-   private static int threadNum;
+
    private static int dataShowMinutes;
 
    private Logger log = Logger.getLogger(this.getClass().getName());
@@ -85,7 +85,7 @@ public class StartupInitListener implements ServletContextListener {
    private CacheProvider cacheProvider;
 
    /** ScheduledExecutorService for starting the reporter thread. **/
-   private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(threadNum);
+   private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(DEFAULT_NODE_COUNT);
 
    /**
     * Loads the property file, and starts the Cache and simulator nodes based on the retrieved data.
@@ -93,7 +93,7 @@ public class StartupInitListener implements ServletContextListener {
     */
    @Override
    public void contextInitialized(ServletContextEvent servletContextEvent) {
-      log.info("Context is initialized.");
+      log.fine("Context is initialized.");
 
       Properties prop = new Properties();
       try {
@@ -102,7 +102,6 @@ public class StartupInitListener implements ServletContextListener {
          e.printStackTrace();
       }
 
-      threadNum = Integer.parseInt(prop.getProperty(NODE_NUMBER, DEFAULT_NODE_NUMBER));
       frequency = Long.parseLong(prop.getProperty(EXECUTION_FREQUENCY, DEFAULT_EXECUTION_FREQUENCY));
       dataShowMinutes = Integer.parseInt(prop.getProperty(DATA_SHOW_MINUTES, DEFAULT_DATA_SHOW_MINUTES));
 
@@ -112,19 +111,13 @@ public class StartupInitListener implements ServletContextListener {
 
       StringBuffer applicationUrl = new StringBuffer("http://").append(serverHost).append(":").append(serverPort).append(contextUrl);
 
-      log.info("The node number is: " + threadNum);
-      log.info("The frequency is: " + frequency);
-      log.info("The data show minutes is: " + dataShowMinutes);
-
+      log.info("Report frequency: " + frequency);
+      log.info("Show recent data for " + dataShowMinutes + " minute(s)");
       log.info("Starting Cache ...");
       cacheProvider.startCache();
 
-      for(int i = 1; i <= threadNum; i++) {
-         String nodeName = "node" + i;
-         Reporter r = new Reporter(nodeName, applicationUrl.toString());
-
-         scheduledExecutorService.scheduleWithFixedDelay(r, 5000, frequency, TimeUnit.MILLISECONDS);
-      }
+      Reporter r = new Reporter("Reporter 1", applicationUrl.toString());
+      scheduledExecutorService.scheduleWithFixedDelay(r, 5000, frequency, TimeUnit.MILLISECONDS);
    }
 
    /**
@@ -133,14 +126,6 @@ public class StartupInitListener implements ServletContextListener {
     */
    public static long getFrequency() {
       return frequency;
-   }
-
-   /**
-    * Returns the number of simulator threads to be run.
-    * @return              the number of threads to run.
-    */
-   public static int getThreadNum() {
-      return threadNum;
    }
 
    /**

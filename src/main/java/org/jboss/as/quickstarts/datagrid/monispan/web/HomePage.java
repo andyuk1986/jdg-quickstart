@@ -109,13 +109,13 @@ public class HomePage {
       chartData.setMode(CHART_MODE);
       chartData.setWidth(CHART_WIDTH_IN_PIXELS);
 
-      Map<String, Report> cacheData = null;
+      Map<String, Report> reports = null;
 
-      cacheData = reportStatisticsProvider.getEntriesFromCache(isFullReportNeeded());
+      reports = reportStatisticsProvider.getReports(isFullReportNeeded());
 
-      Set<Date> orderedSet = getSetOfKeys(cacheData);
+      Set<Date> orderedSet = getSetOfKeys(reports);
       for(Date d : orderedSet) {
-         Report entry = cacheData.get(ReportStatisticsProvider.GENERAL_DATE_FORMATTER.format(d));
+         Report entry = reports.get(ReportStatisticsProvider.GENERAL_DATE_FORMATTER.format(d));
          series1DataList.addDataPoint(new XYDataPoint(d.getTime(), entry.getUserCount()));
          series2DataList.addDataPoint(new XYDataPoint(d.getTime(), entry.getSentNotificationCount()));
       }

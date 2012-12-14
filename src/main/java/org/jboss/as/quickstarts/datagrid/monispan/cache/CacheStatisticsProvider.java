@@ -51,18 +51,16 @@ public class CacheStatisticsProvider {
    public Map<String, Long> getCacheStatisticsAsMap() {
       Map<String, Long> stats = new LinkedHashMap<String, Long>();
 
-      stats.put("Number of Hits", getHits());
-      stats.put("Number of Misses", getMisses());
+      stats.put("Current number of entries in the cache", (long) getCurrentNumberOfEntries());
+      stats.put("Total entries (including passivated ones)", getTotalNumberOfEntries());
+      stats.put("Duration of Data Retrieval in MilliSeconds", reportStatisticsProvider.getExecutionTimeInMillis());
 
       stats.put("Number of Evictions During Last Execution", (long) getEvictions());
       stats.put("Number of Passivations During Last Execution", (long) getPassivations());
       stats.put("Number of Loads During Last Execution", (long) getLoads());
 
-      stats.put("Current number of entries", (long) getCurrentNumberOfEntries());
-      stats.put("Total number of entries in the cache", getTotalNumberOfEntries());
-      stats.put("Duration of Data Retrieval in MilliSeconds", reportStatisticsProvider.getExecutionTimeInMillis());
-
-
+      stats.put("Number of Hits", getHits());
+      stats.put("Number of Misses", getMisses());
 
       return stats;
    }

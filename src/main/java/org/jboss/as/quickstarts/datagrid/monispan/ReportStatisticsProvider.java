@@ -1,21 +1,16 @@
 package org.jboss.as.quickstarts.datagrid.monispan;
 
 import org.jboss.as.quickstarts.datagrid.monispan.cache.CacheProvider;
-import org.jboss.as.quickstarts.datagrid.monispan.cache.CacheStatisticsProvider;
 import org.jboss.as.quickstarts.datagrid.monispan.jsf.StartupInitListener;
 import org.jboss.as.quickstarts.datagrid.monispan.model.Report;
 import org.jboss.as.quickstarts.datagrid.monispan.rest.ReportReceiverRestService;
 
-import javax.annotation.ManagedBean;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,10 +40,11 @@ public class ReportStatisticsProvider {
    /**
     * The format to which the date is corresponds in the project.
     */
-   public static SimpleDateFormat GENERAL_DATE_FORMATTER = new SimpleDateFormat("yyyy.MM.ddHH:mm:ss");
+   public static SimpleDateFormat GENERAL_DATE_FORMATTER = new SimpleDateFormat("yyyy.MM.dd-HH:mm:ss");
+
    private long executionTimeInMillis = 0;
 
-   private static final int SECOND_IN_MILLIS = 1000;
+   private static final int ONE_SECOND_IN_MILLIS = 1000;
 
    /**
     * Returns entries from the cache based on the provided parameter.
@@ -65,13 +61,8 @@ public class ReportStatisticsProvider {
     *    Cache Eviction Strategy is LRU (Last Recently Used) and the cache max entries number is calculated
     *    according to the provided numbers of simulator jobs execution frequency. E.g. if the execution frequency is set
     *    to 6 seconds, then the number of max entries is set to 10 (as if on report is put to the cache each 6 seconds,
-    *    there would be 10 reports in a minute maximum).
-    *
-    *    Taking into account, that Eviction's maxEntries is used as guide for the entire cache, but eviction happens on
-    *    per cache segment (so when the segment is full, the segment is evicted), there is no guarantee that the cache
-    *    will contain all reports for the last minute as some data may be evicted in the meantime.
-    *
-    *    That's why even the data for the last minute is taken key by key and not just as keySet.
+    *    there would be 10 reports in a minute maximum). As a result, the cache will contain only reports from the last
+    *    minute. Older reports are evicted and moved to a CacheStore.
     *
     * 3. The next key is generated according to the frequency of reports push to the cache. E.g. the next key would be
     *    current key (as date) + job_execution_frequency (in milliseconds).
@@ -79,60 +70,37 @@ public class ReportStatisticsProvider {
     * @param  isFullReport          specifies whether the full report is needed or no
     * @return                       all entries from the cache as a Map.
     */
-   public Map<String, Report> getEntriesFromCache(final boolean isFullReport) {
+   public Map<String, Report> getReports(final boolean isFullReport) {
       long startTime = System.currentTimeMillis();
 
-      Map<String, Report> cacheEntries = new HashMap<String, Report>();
+      Map<String, Report> reports = new HashMap<String, Report>();
       //The first key is got. The first key is either the date when the very first report was put to the cache (if the full
-      //report is necessary, or is the first available key withing the last minute.
-      Date dateKey = getFirstAvailableKey(isFullReport);
+      //report is necessary), or is the first available key withing the last minute.
+      Date dateKey = getFirstAvailableReportDate(isFullReport);
 
       Date currentDate = new Date();
 
       if(dateKey != null) {
          //looping till the generated key doesn't exceed the current date
          while (dateKey.before(currentDate)) {
-            long notifFrequency = StartupInitListener.getFrequency();
-
             String key = GENERAL_DATE_FORMATTER.format(dateKey);
 
-            //Retrieves the cache entry by generated key.
-            //The entry may be either immediately available or may be evicted and stored in CacheStore
+            //Retrieves the cache entry by generated key.The entry may be either immediately available or may be
+            //retrieved from a CacheStore if full report is requested
             Report rep = cacheProvider.getCache(CacheProvider.REPORT_CACHE_NAME).get(key);
 
             if(rep != null) {
-               cacheEntries.put(key, rep);
+               reports.put(key, rep);
             }
 
             //The next key is generated according to the frequency of placing reports to the cache. The next key
             //should be current_key (as date) + job_execution_frequency(in milliseconds)
-            dateKey = getNextPossibleDateKey(dateKey, (int) notifFrequency);
+            dateKey = generateNextReportDate(dateKey, StartupInitListener.getFrequency());
          }
       }
       executionTimeInMillis = System.currentTimeMillis() - startTime;
 
-      return cacheEntries;
-   }
-
-   /**
-    * Generates key for retrieving data from the cache. The key is generated with the following logic:
-    *
-    * as the report is sent to system with identified frequency, and as the key represents the date when the report has
-    * been placed into the cache, the following happens:
-    *
-    * 1. The system stores the date when the very first report was placed into the cache;
-    * 2. This date is got from the cache, and by adding the execution frequency time, the system gets the next keys.
-    *
-    * @param currentDateKey                  the last executed key.
-    * @return                                the newly generated key which is last executed key + frequency
-    */
-   private Date getNextPossibleDateKey(final Date currentDateKey, final int period) {
-      Calendar cal = Calendar.getInstance();
-      cal.setTime(currentDateKey);
-
-      cal.add(Calendar.MILLISECOND, period);
-
-      return cal.getTime();
+      return reports;
    }
 
    /**
@@ -157,55 +125,32 @@ public class ReportStatisticsProvider {
     * @param isFullReportNeeded        identifies whether the full report is needed.
     * @return                          the first available key for retrieving data from cache.
     */
-   private Date getFirstAvailableKey(final boolean isFullReportNeeded) {
+   private Date getFirstAvailableReportDate(final boolean isFullReportNeeded) {
       //Setting the first key to the very first report date.
-      Date firstKey = ReportReceiverRestService.getFirstReportDate();
-      if(!isFullReportNeeded && firstKey != null) {
-         //If the recent report is needed , then the first key should be starting (current_date - 1) minute. But the method
-         // checks, if the (current_date - 1) < than the very first report date, then the first key is left as it is.
+      Date firstDateKey = ReportReceiverRestService.getFirstReportDate();
+      if(!isFullReportNeeded && firstDateKey != null) {
+         //If the recent report is needed , then the first key should be starting (current_date - 1) minute.
          Calendar now = Calendar.getInstance();
          now.add(Calendar.MINUTE, -StartupInitListener.getDataShowMinutes());
-         if(now.getTime().after(firstKey)) {
-            firstKey = now.getTime();
+         if(now.getTime().after(firstDateKey)) {
+            firstDateKey = now.getTime();
          }
 
-         boolean isCorrectKeyFound = false;
+         boolean isFirstValidDateKeyFound = false;
          Date currentDate = new Date();
-         while(!isCorrectKeyFound && firstKey.before(currentDate)) {
-            String date = GENERAL_DATE_FORMATTER.format(firstKey);
-
+         while(!isFirstValidDateKeyFound && firstDateKey.before(currentDate)) {
+            String date = GENERAL_DATE_FORMATTER.format(firstDateKey);
             //If the data with the provided key is found, then this is the key to return
             if(cacheProvider.getCache(CacheProvider.REPORT_CACHE_NAME).get(date) != null) {
-               isCorrectKeyFound = true;
+               isFirstValidDateKeyFound = true;
             } else {
                //If the data is not found, then the key is incremented with a second.
-               firstKey = getNextPossibleDateKey(firstKey, SECOND_IN_MILLIS);
+               firstDateKey = generateNextReportDate(firstDateKey, ONE_SECOND_IN_MILLIS);
             }
          }
       }
 
-      return firstKey;
-   }
-
-   /**
-    * Returns the report which shows total numbers.
-    * The report contains the total number of users and sent notification counts.
-    *
-    * @param reportSet           list which contains the reports from the cache.
-    * @return                    single report which contains the total numbers.
-    */
-   public Report getTotalReport(List<Report> reportSet) {
-      int userCountSum = 0;
-      int sentNotifSum = 0;
-      for(Report rep : reportSet) {
-         userCountSum += rep.getUserCount();
-         sentNotifSum += rep.getSentNotificationCount();
-      }
-
-      Report totalReport = new Report("total", userCountSum, sentNotifSum, null);
-      totalReport.setReportName("Total Numbers");
-
-      return totalReport;
+      return firstDateKey;
    }
 
    /**
@@ -214,5 +159,22 @@ public class ReportStatisticsProvider {
     */
    public long getExecutionTimeInMillis() {
       return executionTimeInMillis;
+   }
+
+   /**
+    * Generates next key for retrieving data from the cache. The key is generated with the following logic:
+    *
+    * As the report is sent to system with identified frequency, and as the key represents the date when the report has
+    * been placed into the cache, the next date (key) is generated simply by adding the frequency value to the previous
+    * date.
+    *
+    * @param previousReportDate              the previous report date.
+    * @return                                the newly generated date which is also the next key
+    */
+   public static Date generateNextReportDate(final Date previousReportDate, final long frequency) {
+      Calendar cal = Calendar.getInstance();
+      cal.setTime(previousReportDate);
+      cal.add(Calendar.MILLISECOND, (int) frequency);
+      return cal.getTime();
    }
 }

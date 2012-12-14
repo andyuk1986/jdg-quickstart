@@ -29,10 +29,11 @@ import java.util.Map;
 @Path("/report")
 @ManagedBean
 public class ReportReceiverRestService {
-   private static Map<String, List<Report>> groupMap = new HashMap<String, List<Report>>();
 
    public static final String OK_RESPONSE = "ok";
+
    private static Date firstReportDate = null;
+
    private static Date nextReportDate = null;
 
    @Inject
@@ -59,38 +60,23 @@ public class ReportReceiverRestService {
    private String processReport(Report report) throws ParseException {
       setFirstReportDate(report);
 
-      synchronized (groupMap) {
-         String key = ReportStatisticsProvider.GENERAL_DATE_FORMATTER.format(nextReportDate);
-         List<Report> reportSet = groupMap.get(key);
-         if(reportSet == null) {
-            reportSet = new ArrayList<Report>();
-            groupMap.put(key, reportSet);
-         }
+      String reportKey = ReportStatisticsProvider.GENERAL_DATE_FORMATTER.format(nextReportDate);
 
-         reportSet.add(report);
+      cacheProvider.put(CacheProvider.REPORT_CACHE_NAME, reportKey, report);
 
-         if(reportSet.size() == StartupInitListener.getThreadNum()) {
-            Report finalReport = reportStatisticsProvider.getTotalReport(reportSet);
-            cacheProvider.put(CacheProvider.REPORT_CACHE_NAME, key, finalReport);
-
-            groupMap.remove(key);
-
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(nextReportDate);
-            cal.add(Calendar.MILLISECOND, (int) StartupInitListener.getFrequency());
-
-            nextReportDate = cal.getTime();
-         }
-      }
+      //The reports may be received any time. Generating next report date and using it as a key
+      //for storing the report allows us to later generate keys when looking for certain reports in the cache.
+      nextReportDate = ReportStatisticsProvider.generateNextReportDate(nextReportDate, StartupInitListener.getFrequency());
 
       return OK_RESPONSE;
    }
 
    /**
     * Stores the date when the first report has been sent.
+    *
     * @param report        the report from which the date should be picked.
     */
-   public static synchronized void setFirstReportDate(Report report) {
+   public static void setFirstReportDate(Report report) {
       if(firstReportDate == null) {
          try {
             firstReportDate = ReportStatisticsProvider.GENERAL_DATE_FORMATTER.parse(report.getReportDate());
